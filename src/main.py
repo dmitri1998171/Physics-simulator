@@ -1,45 +1,57 @@
-from turtle import color
 import pygame, sys
 from pygame.locals import *
 
-def handleEvents():
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT: 
-            sys.exit()
+import gameObject
 
-        elif event.type == KEYUP:
-            if event.key == K_ESCAPE:
+
+class Game:
+    def __init__(self, caption, width, height, frame_rate):
+        self.frame_rate = frame_rate
+        self.game_over = False
+        self.objects = []
+        self.width = width
+        self.height = height
+        self.ground = None
+        self.groundRect = None
+
+        pygame.init()
+        pygame.font.init()
+        pygame.display.set_caption(caption)
+        self.screen = pygame.display.set_mode((width, height))
+        self.clock = pygame.time.Clock()
+
+        self.ground = pygame.Surface(size=(self.width, self.height / 6))
+        self.ground.fill((0, 200, 0))
+        self.groundRect = self.ground.get_rect()
+
+    def handleEvents(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT: 
                 sys.exit()
 
-width = 1280
-height = 800
-speed = [2, 2]
-black = 0, 0, 0
+            elif event.type == KEYUP:
+                if event.key == K_ESCAPE:
+                    sys.exit()
 
-pygame.init()
-screen = pygame.display.set_mode(size=(width, height))
-pygame.display.set_caption("Physics Simulator")
-clock = pygame.time.Clock()
+    def update(self):
+        for o in self.objects:
+            o.update()
 
-ball = pygame.image.load("src\intro_ball.gif")
-ballRect = ball.get_rect()
+    def draw(self):
+        self.screen.fill(color=(0, 191, 235))
+        self.screen.blit(self.ground, (0, (self.height - (self.height / 6))))
 
-ground = pygame.Surface(size=(width, height / 6))
-ground.fill((0, 200, 0))
-groundRect = ground.get_rect()
+        for o in self.objects:
+            o.draw(self.screen)
 
-while True:
-    handleEvents()
-            
-    ballRect = ballRect.move(speed)
-    if ballRect.left < 0 or ballRect.right > width:
-        speed[0] = -speed[0]
-    if ballRect.top < 0 or ballRect.bottom > height:
-        speed[1] = -speed[1]
+    def run(self):
+        while not self.game_over:
+            self.handleEvents()
+            self.update()
+            self.draw()
 
-    screen.fill(color=(0, 191, 235))
-    screen.blit(ball, ballRect)
-    screen.blit(ground, (0, (height - (height / 6))))
+            pygame.display.update()
+            self.clock.tick(self.frame_rate)
 
-    pygame.display.update()
-    clock.tick(60)
+game = Game("Physics Simulator", 1280, 800, 60)
+game.run()
