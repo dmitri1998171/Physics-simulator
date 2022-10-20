@@ -25,6 +25,7 @@ class Game:
         self.groundRect = self.ground.get_rect()
 
         self.objects.append(gameObject.Circle(self.screen, 100, 100))
+        self.objects.append(gameObject.Rectangle(self.screen, 200, 200))
 
 
     def handleEvents(self):

@@ -45,6 +45,21 @@ class Circle(GameObject):
 
         self.x = x
         self.y = y
+        self.radius = 50
 
     def draw(self, screen):
-        self.circle = pygame.draw.circle(screen, (self.color_r, self.color_g, self.color_b), (self.x, self.y), 50)
+        self.circle = pygame.draw.circle(screen, (self.color_r, self.color_g, self.color_b), (self.x, self.y), self.radius)
+
+
+class Rectangle(GameObject):
+    def __init__(self, screen, x, y):
+        super().__init__(screen, x, y)
+        super().randomizeColor()
+
+        self.x = x
+        self.y = y
+        self.w = 100
+        self.h = 100
+
+    def draw(self, screen):
+        self.rectangle = pygame.draw.rect(screen, (self.color_r, self.color_g, self.color_b), (self.x, self.y, self.w, self.h))
