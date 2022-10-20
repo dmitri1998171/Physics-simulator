@@ -1,17 +1,32 @@
-class GameObject:
-    def __init__(self, x, y, w, h, speed=(0, 0)):
-        self.speed = speed
-        self.density = 0 # Плотность
-        self.mass = 0 # Масса
-        self.friction = 0 # Трение
-        self.air_resistance = 0 # сопортевление воздуха
-        self.restitution = 0 # Упругость
-        self.impulse = 0 # Импульс
-        self.force = 0 # Сила
+import random, pygame
 
+class GameObject:
+    def __init__(self, screen, x, y):
+        self.speed = 0          # Скорость
+        self.density = 0        # Плотность
+        self.mass = 0           # Масса
+        self.friction = 0       # Трение
+        self.air_resistance = 0 # сопортевление воздуха
+        self.restitution = 0    # Упругость
+        self.impulse = 0        # Импульс
+        self.force = 0          # Сила
+
+        self.x = x
+        self.y = y
+        self.rotation = []
+        self.color_r = 0
+        self.color_g = 0
+        self.color_b = 0
+
+
+    def randomizeColor(self):
+        self.color_r = random.randint(0, 256)
+        self.color_g = random.randint(0, 256)
+        self.color_b = random.randint(0, 256)
 
     def draw(self, screen):
         pass
+
 
     def move(self, dx, dy): 
         pass
@@ -20,7 +35,16 @@ class GameObject:
         if self.speed == [0, 0]:
             return
 
-        self.move(self.speed)
+        # self.move(self.speed)
     
 
+class Circle(GameObject):
+    def __init__(self, screen, x, y):
+        super().__init__(screen, x, y)
+        super().randomizeColor()
 
+        self.x = x
+        self.y = y
+
+    def draw(self, screen):
+        self.circle = pygame.draw.circle(screen, (self.color_r, self.color_g, self.color_b), (self.x, self.y), 50)

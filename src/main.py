@@ -24,6 +24,9 @@ class Game:
         self.ground.fill((0, 200, 0))
         self.groundRect = self.ground.get_rect()
 
+        self.objects.append(gameObject.Circle(self.screen, 100, 100))
+
+
     def handleEvents(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT: 
