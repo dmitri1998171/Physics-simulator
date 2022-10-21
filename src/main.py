@@ -37,13 +37,7 @@ class Game:
         self.objects.append(gameObject.Circle(self.screen, 100, 100))
         self.objects.append(gameObject.Rectangle(self.screen, 200, 200))
 
-        window_surface = pygame.display.set_mode((screen_rev.height, screen_rev.width))
-
         manager = pygame_gui.UIManager((800, 600))
-
-        hello_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 275), (100, 50)),
-                                            text='Say Hello',
-                                            manager=manager)
 
     def handleEvents(self):
         for event in pygame.event.get():
@@ -81,7 +75,7 @@ class Game:
         self.screen.blit(self.ground, (0, (self.height - (self.height / 6))))
 
         for o in self.objects:
-            o.draw(self.screen, 0)
+            o.draw(self.screen, )
 
     def run(self):
         while not self.game_over:
@@ -91,9 +85,6 @@ class Game:
 
             pygame.display.update()
             self.clock.tick(self.frame_rate)
-            self.clock = self.clock.tick(60)/1000.0
-
-            self.clock = pygame.time.Clock()
 
 game = Game("Physics Simulator", screen_rev.width, screen_rev.height, 60)
 game.run()
