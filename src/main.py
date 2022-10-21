@@ -1,8 +1,17 @@
 import pygame, sys
+import pygame_gui
+
 from pygame.locals import *
+from win32api import GetSystemMetrics # Получение разрешение экрана @eto-ban
 
 import gameObject
-
+'''
+Получение разрешения экрана @eto-ban
+'''
+width_sc = GetSystemMetrics(0)
+height_sc = GetSystemMetrics(1)
+print(f'Width: {width_sc}, Height: {height_sc}')
+# close @eto-ban
 
 class Game:
     def __init__(self, caption, width, height, frame_rate):
@@ -23,6 +32,10 @@ class Game:
         self.ground = pygame.Surface(size=(self.width, self.height / 6))
         self.ground.fill((0, 200, 0))
         self.groundRect = self.ground.get_rect()
+
+        self.objects.append(gameObject.Circle(self.screen, 100, 100))
+        self.objects.append(gameObject.Rectangle(self.screen, 200, 200))
+
 
     def handleEvents(self):
         for event in pygame.event.get():
@@ -53,5 +66,5 @@ class Game:
             pygame.display.update()
             self.clock.tick(self.frame_rate)
 
-game = Game("Physics Simulator", 1280, 800, 60)
+game = Game("Physics Simulator", width_sc, height_sc, 60)
 game.run()
