@@ -11,8 +11,7 @@ class GameObject:
         self.impulse = 0        # Импульс
         self.force = 0          # Сила
 
-        self.x = x
-        self.y = y
+        update(x, y)
         self.rotation = []
         self.color_r = 0
         self.color_g = 0
@@ -24,14 +23,13 @@ class GameObject:
         self.color_g = random.randint(0, 256)
         self.color_b = random.randint(0, 256)
 
-    def draw(self, screen):
-        pass
+    def draw(self, screen, x, y):
+        update(x, y)
 
-
-    def move(self, dx, dy): 
-        pass
-
-    def update(self):
+    def update(self, x, y):
+        self.x = x
+        self.y = y
+        
         if self.speed == [0, 0]:
             return
 
@@ -42,20 +40,37 @@ class Circle(GameObject):
     def __init__(self, screen, x, y):
         super().__init__(screen, x, y)
         super().randomizeColor()
-
-        self.x = x
-        self.y = y
+        super().update()
+        
         self.radius = 50
 
     def draw(self, screen):
+        super().update(self.x, self.y)
+        
+        screen.lock()
         self.circle = pygame.draw.circle(screen, (self.color_r, self.color_g, self.color_b), (self.x, self.y), self.radius)
-
+        screen.unlock()
+        
+    @property
+    def getObject(self):
+        return self.circle
+        
+    def isIntersect(self, event):
+        if (self.circle.collidepoint(event.pos)):
+            print("debug: isIntersect True")
+            return True
+        else:
+            print("debug: isIntersect False")
+            return False      
+                    
+    def move(self, event):
+        pygame.Rect.move_ip(self.circle, event.rel, 0)
 
 class Rectangle(GameObject):
     def __init__(self, screen, x, y):
         super().__init__(screen, x, y)
         super().randomizeColor()
-
+        
         self.x = x
         self.y = y
         self.w = 100

@@ -1,7 +1,6 @@
 import pygame, sys
 import pygame_gui
 
-from math import pi
 from pygame.locals import *
 from screeninfo import get_monitors # Получение разрешение экрана @eto-ban
 
@@ -22,7 +21,9 @@ class Game:
         self.height = height
         self.ground = None
         self.groundRect = None
-        
+        self.running = True
+        self.moving = False
+
         pygame.init()
         pygame.font.init()
         pygame.display.set_caption(caption)
@@ -36,62 +37,52 @@ class Game:
         self.objects.append(gameObject.Circle(self.screen, 100, 100))
         self.objects.append(gameObject.Rectangle(self.screen, 200, 200))
 
-        # Buttons
-        img = pygame.image.load('access/icons/1.png')
-        self.manager = pygame_gui.UIManager((screen_rev.width, screen_rev.height))
-        
-
-        self.reset_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 0), (70, 35)),
-                                            text='reset',
-                                            #normal_bg=img,
-                                            manager=self.manager)
-        self.settings_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((75, 0), (70, 35)),
-                                            text='SETIN',
-                                            manager=self.manager)
-        self.help_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((150, 0), (70, 35)),
-                                            text='HELP',
-                                            manager=self.manager)
-
+        manager = pygame_gui.UIManager((800, 600))
 
     def handleEvents(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT: 
                 sys.exit()
 
-            if event.type == KEYUP:
+            elif event.type == KEYUP:
                 if event.key == K_ESCAPE:
                     sys.exit()
+                    
+            elif event.type == MOUSEBUTTONDOWN:
+                if self.objects[0].isIntersect(event):
+                    self.moving = True
+                    print('debug: isIntersect True(ok1)')
 
-            if event.type == pygame_gui.UI_BUTTON_PRESSED:
-                if event.ui_element == self.reset_button:
-                    print('reset')
-            # pygame_gui
-            self.manager.process_events(event)
+            elif event.type == MOUSEBUTTONUP:
+                self.moving = False
+                print('debug: isIntersect True(ok2)')
+
+            elif event.type == MOUSEMOTION and self.moving == True:
+                #self.objects[0].getObject().move_ip(event.rel)
+                
+                self.update(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
+                
+                self.objects[0].move(event)
+                
+                print('debug: isIntersect True(ok3)')
 
     def update(self):
         for o in self.objects:
             o.update()
-        # pygame_gui
-        time_delta = self.clock.tick(60)/1000.0
-        self.manager.update(time_delta)
 
     def draw(self):
         self.screen.fill(color=(0, 191, 235))
         self.screen.blit(self.ground, (0, (self.height - (self.height / 6))))
-        
-        for o in self.objects:
-            o.draw(self.screen)
-        # pygame_gui
-        pygame.draw.rect(self.screen, (1,83,103), (0, 0, 500, 35))
-        self.manager.draw_ui(self.screen)
 
+        for o in self.objects:
+            o.draw(self.screen, )
 
     def run(self):
         while not self.game_over:
             self.handleEvents()
             self.update()
             self.draw()
-            # pygame_gui
+
             pygame.display.update()
             self.clock.tick(self.frame_rate)
 
