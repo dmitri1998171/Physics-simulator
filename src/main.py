@@ -35,6 +35,12 @@ class Game:
         self.objects.append(gameObject.Circle(self.screen, 100, 100))
         self.objects.append(gameObject.Rectangle(self.screen, 200, 200))
 
+        # Start game
+        self.manager = pygame_gui.UIManager((screen_rev.width, screen_rev.height))
+
+        self.hello_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 275), (100, 50)),
+                                             text='Say Hello',
+                                             manager=self.manager)
 
     def handleEvents(self):
         for event in pygame.event.get():
@@ -44,17 +50,22 @@ class Game:
             elif event.type == KEYUP:
                 if event.key == K_ESCAPE:
                     sys.exit()
+            self.manager.process_events(event)
 
     def update(self):
         for o in self.objects:
             o.update()
+        time_delta = self.clock.tick(60)/1000.0
+        self.manager.update(time_delta)
 
     def draw(self):
         self.screen.fill(color=(0, 191, 235))
         self.screen.blit(self.ground, (0, (self.height - (self.height / 6))))
-
+        
         for o in self.objects:
             o.draw(self.screen)
+
+        self.manager.draw_ui(self.screen)
 
     def run(self):
         while not self.game_over:
