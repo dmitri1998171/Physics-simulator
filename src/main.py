@@ -19,16 +19,16 @@ class Game:
         self.height = height
         self.ground = None
         self.groundRect = None
-        self.rectangle_draging = False
+        self.isDragging = False
+        self.DragableObject = 0
         self.mouse_x = screen_rev.width / 2
         self.mouse_y = screen_rev.height / 2
-        self.offset_y = 0
-        self.offset_x = 0
+        self.cursorObjectDelta = [0, 0]
 
         pygame.init()
         pygame.font.init()
         pygame.display.set_caption(caption)
-        self.screen = pygame.display.set_mode((width, height))
+        self.screen = pygame.display.set_mode((width, height), FULLSCREEN)
         self.clock = pygame.time.Clock()
 
         self.ground = pygame.Surface(size=(self.width, self.height / 6))
@@ -188,23 +188,27 @@ class Game:
                      sys.exit()
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:            
-                    if self.objects[1].isIntersect(event):
-                        self.rectangle_draging = True
-                        
+                if event.button == 1:
+                    for i in range(len(self.objects)):            
+                        if self.objects[i].isIntersect(event):
+                            self.isDragging = True
+                            self.DragableObject = i
+                            break
+
+                    if(self.isDragging):
+                        self.mouse_x, self.mouse_y = event.pos
+                        self.cursorObjectDelta[0] = self.objects[i].x - self.mouse_x
+                        self.cursorObjectDelta[1] = self.objects[i].y - self.mouse_y
+
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:            
-                    self.rectangle_draging = False
+                    self.isDragging = False
 
             if event.type == pygame.MOUSEMOTION:
-                if self.rectangle_draging:
+                if self.isDragging:
                     self.mouse_x, self.mouse_y = event.pos
-
-                    self.offset_x = self.objects[1].x - self.mouse_x
-                    self.offset_y = self.objects[1].y - self.mouse_y
-
-                    self.objects[1].x = self.mouse_x + self.offset_x
-                    self.objects[1].y = self.mouse_y + self.offset_y
+                    self.objects[self.DragableObject].x = self.mouse_x + self.cursorObjectDelta[0]
+                    self.objects[self.DragableObject].y = self.mouse_y + self.cursorObjectDelta[1]
 
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
                 self.UIHandleEvents(event)
@@ -279,7 +283,7 @@ class Game:
         create_rect(self.screen, 490, 35, 2, (66, 204, 210), (0, 0, 0))
 
         for o in self.objects:
-            o.draw(self.screen, self.mouse_x, self.mouse_y)
+            o.draw(self.screen)
         
         self.manager.draw_ui(self.screen)
 

@@ -24,7 +24,7 @@ class GameObject:
         self.color_g = random.randint(0, 256)
         self.color_b = random.randint(0, 256)
 
-    def draw(self, screen, x, y):
+    def draw(self, screen):
         pass
 
 
@@ -47,11 +47,16 @@ class Circle(GameObject):
         self.y = y
         self.radius = 50
 
-    def draw(self, screen, x, y):
-        self.x = x
-        self.y = y
+    def draw(self, screen):
         self.circle = pygame.draw.circle(screen, (self.color_r, self.color_g, self.color_b), (self.x, self.y), self.radius)
 
+    def isIntersect(self, event):
+        if (self.circle.collidepoint(event.pos)):
+            print("debug: isIntersect True")
+            return True
+        else:
+            print("debug: isIntersect False")
+            return False  
 
 class Rectangle(GameObject):
     def __init__(self, screen, x, y):
@@ -64,9 +69,9 @@ class Rectangle(GameObject):
         self.w = 100
         self.h = 100
 
-    def draw(self, screen, x, y):
-        self.x = x
-        self.y = y
+    def draw(self, screen):
+        # self.x = x
+        # self.y = y
         self.rectangle = pygame.draw.rect(screen, (self.color_r, self.color_g, self.color_b), (self.x, self.y, self.w, self.h))
 
     # @property
