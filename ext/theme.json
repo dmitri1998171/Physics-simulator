@@ -1,0 +1,263 @@
+{
+    "defaults":
+    {
+        "colours":
+        {
+            "normal_bg":"#D9D9D9",
+            "hovered_bg":"#BDBDBD",
+            "disabled_bg":"#25292e",
+            "selected_bg":"#193754",
+            "dark_bg":"#15191e",
+            "normal_text":"#000000",
+            "hovered_text":"#FFFFFF",
+            "selected_text":"#FFFFFF",
+            "disabled_text":"#6d736f",
+            "link_text": "#0000EE",
+            "link_hover": "#2020FF",
+            "link_selected": "#551A8B",
+            "text_shadow": "#777777",
+            "normal_border": "#DDDDDD",
+            "hovered_border": "#B0B0B0",
+            "disabled_border": "#808080",
+            "selected_border": "#8080B0",
+            "active_border": "#8080B0",
+            "filled_bar":"#f4251b",
+            "unfilled_bar":"#CCCCCC"
+        }
+
+    },
+    "tool_tip":
+    {
+        "misc":
+        {
+           "rect_width": "170"
+        }
+    },
+    "tool_tip.text_box":
+    {
+        "colours":
+        {
+            "dark_bg":"#D9D9D9",
+            "normal_border": "#BDBDBD"
+        },
+
+        "misc":
+        {
+            "border_width": "2",
+            "padding": "5,5"
+        }
+    },
+    "#reset_button":
+    {
+        "images":
+        {
+            "normal_image":
+            {
+                "path": "../Media/Icons/reset.png" 
+            }
+        }    
+    },
+    "#settings_button":
+    {
+        "images":
+        {
+            "normal_image":
+            {
+                "path": "../Media/Icons/settings.png" 
+            }
+        }    
+    },
+    "#help_button":
+    {
+        "images":
+        {
+            "normal_image":
+            {
+                "path": "../Media/Icons/help.png" 
+            }
+        }    
+    },
+    "#arrow_left_button":
+    {
+        "images":
+        {
+            "normal_image":
+            {
+                "path": "../Media/Icons/arrow-left.png" 
+            }
+        }    
+    },
+    "#start_button":
+    {
+        "images":
+        {
+            "normal_image":
+            {
+                "path": "../Media/Icons/play-circle.png" 
+            }
+        }    
+    },
+    "#arrow_right_button":
+    {
+        "images":
+        {
+            "normal_image":
+            {
+                "path": "../Media/Icons/arrow-right.png" 
+            }
+        }    
+    },
+    "#create_circle_button":
+    {
+        "images":
+        {
+            "normal_image":
+            {
+                "path": "../Media/Icons/circle.png" 
+            }
+        }    
+    },
+    "#create_rectangle_button":
+    {
+        "images":
+        {
+            "normal_image":
+            {
+                "path": "../Media/Icons/square.png" 
+            }
+        }    
+    },
+    "#create_gear_button":
+    {
+        "images":
+        {
+            "normal_image":
+            {
+                "path": "../Media/Icons/gear-wide.png" 
+            }
+        }    
+    },
+    "#create_nail_button":
+    {
+        "images":
+        {
+            "normal_image":
+            {
+                "path": "../Media/Icons/x-pin.png" 
+            }
+        }    
+    },
+    "#toolbar_move_with_inert_button":
+    {
+        "images":
+        {
+            "normal_image":
+            {
+                "path": "../Media/Icons/hand-index-thumb.png" 
+            }
+        }    
+    },
+    "#toolbar_move_without_inert_button":
+    {
+        "images":
+        {
+            "normal_image":
+            {
+                "path": "../Media/Icons/arrows-move.png" 
+            }
+        }    
+    },
+    "#toolbar_rotate_button":
+    {
+        "images":
+        {
+            "normal_image":
+            {
+                "path": "../Media/Icons/arrow-counterclockwise.png" 
+            }
+        }    
+    },
+    "#toolbar_size_button":
+    {
+        "images":
+        {
+            "normal_image":
+            {
+                "path": "../Media/Icons/arrows-angle-expand.png" 
+            }
+        }    
+    },
+    "#scale_plus_button":
+    {
+        "images":
+        {
+            "normal_image":
+            {
+                "path": "../Media/Icons/zoom-in.png" 
+            }
+        }    
+    },
+    "#scale_minus_button":
+    {
+        "images":
+        {
+            "normal_image":
+            {
+                "path": "../Media/Icons/zoom-out.png" 
+            }
+        }    
+    },
+    "#physics_gravity_button":
+    {
+        "images":
+        {
+            "normal_image":
+            {
+                "path": "../Media/Icons/gravity.png" 
+            }
+        }    
+    },
+    "#physics_air_resistance_button":
+    {
+        "images":
+        {
+            "normal_image":
+            {
+                "path": "../Media/Icons/aero.png" 
+            }
+        }    
+    },
+    "#physics_grid_button":
+    {
+        "images":
+        {
+            "normal_image":
+            {
+                "path": "../Media/Icons/grid-3x3.png" 
+            }
+        }    
+    },
+    "#information_object_button":
+    {
+        "images":
+        {
+            "normal_image":
+            {
+                "path": "../Media/Icons/info-circle.png" 
+            }
+        }    
+    },
+    "#information_edit_button":
+    {
+        "images":
+        {
+            "normal_image":
+            {
+                "path": "../Media/Icons/rulers.png" 
+            }
+        }    
+    }
+
+
+    
+}
