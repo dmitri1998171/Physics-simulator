@@ -35,8 +35,9 @@ class Game:
         self.ground.fill((0, 200, 0))
         self.groundRect = self.ground.get_rect()
 
-        self.objects.append(gameObject.Circle(self.screen, 100, 100))
+        self.objects.append(gameObject.Gear(self.screen, 300, 300))
         self.objects.append(gameObject.Rectangle(self.screen, 200, 200))
+        self.objects.append(gameObject.Circle(self.screen, 200, 200))
 
         # pygame_gui buttons
         self.manager = pygame_gui.UIManager((screen_rev.width, screen_rev.height), '../ext/theme.json')
