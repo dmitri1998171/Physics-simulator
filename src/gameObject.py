@@ -18,6 +18,8 @@ class GameObject:
         self.color_g = 0
         self.color_b = 0
 
+        self.canDragging = True # Для работы фиксатора
+
     def randomizeColor(self):
         self.color_r = random.randint(0, 256)
         self.color_g = random.randint(0, 256)
@@ -41,8 +43,6 @@ class Circle(GameObject):
         super().__init__(screen, x, y)
         super().randomizeColor()
 
-        self.x = x
-        self.y = y
         self.radius = 50
 
     def draw(self, screen):
@@ -50,10 +50,8 @@ class Circle(GameObject):
 
     def isIntersect(self, event):
         if (self.circle.collidepoint(event.pos)):
-            print("debug: isIntersect True")
             return True
         else:
-            print("debug: isIntersect False")
             return False  
 
 class Rectangle(GameObject):
@@ -61,8 +59,6 @@ class Rectangle(GameObject):
         super().__init__(screen, x, y)
         super().randomizeColor()
 
-        self.x = x
-        self.y = y
         self.w = 100
         self.h = 100
 
@@ -71,8 +67,6 @@ class Rectangle(GameObject):
 
     def isIntersect(self, event):
         if (self.rectangle.collidepoint(event.pos)):
-            print("debug: isIntersect True")
             return True
         else:
-            print("debug: isIntersect False")
             return False      
