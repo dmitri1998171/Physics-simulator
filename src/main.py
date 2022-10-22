@@ -22,8 +22,8 @@ class Game:
         self.ground = None
         self.groundRect = None
         self.rectangle_draging = False
-        self.mouse_x = 100
-        self.mouse_y = 100
+        self.mouse_x = screen_rev.width / 2
+        self.mouse_y = screen_rev.height / 2
         self.offset_y = 0
         self.offset_x = 0
 
@@ -41,76 +41,131 @@ class Game:
         self.objects.append(gameObject.Rectangle(self.screen, 200, 200))
 
         # pygame_gui buttons
-        self.manager = pygame_gui.UIManager((screen_rev.width, screen_rev.height))
+        self.manager = pygame_gui.UIManager((screen_rev.width, screen_rev.height), '../ext/theme.json')
+        self.button_size_x_menu = screen_rev.width / 100 * 2.95
+        self.button_size_y_menu = screen_rev.height / 100 * 2.23
+        print(self.button_size_x_menu)
+        print(self.button_size_y_menu)
+        self.button_size_x_tools = 80
+        self.button_size_y_tools = 80
+        
         #menu buttons
-        self.reset_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 0), (70, 35)),
-                                             text='Reset',
+        self.reset_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 0), (self.button_size_x_menu, self.button_size_y_menu)),
+                                             text='',
+                                             tool_tip_text = 'Reset',
+                                             object_id=f"#reset_button",
                                              manager=self.manager)
-        self.settings_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((75, 0), (70, 35)),
-                                             text='Settings',
+        self.settings_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((70, 0), (self.button_size_x_menu, self.button_size_y_menu)),
+                                             text='',
+                                             tool_tip_text = 'Settings',
+                                             object_id=f"#settings_button",
                                              manager=self.manager)
-        self.help_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((145, 0), (70, 35)),
-                                             text='Help',
+        self.help_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((140, 0), (self.button_size_x_menu, self.button_size_y_menu)),
+                                             text='',
+                                             tool_tip_text = 'Help',
+                                             object_id=f"#help_button",
                                              manager=self.manager)
         # simulation button
-        self.arrow_left_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((300, 0), (70, 35)),
-                                             text='Arr LEFT',
+        self.arrow_left_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((280, 0), (self.button_size_x_menu, self.button_size_y_menu)),
+                                             text='',
+                                             tool_tip_text = 'Arrow left',
+                                             object_id=f"#arrow_left_button",
                                              manager=self.manager)
-        self.start_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((375, 0), (70, 35)),
-                                             text='START',
+        self.start_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 0), (self.button_size_x_menu, self.button_size_y_menu)),
+                                             text='',
+                                             tool_tip_text = 'Start',
+                                             object_id=f"#start_button",
                                              manager=self.manager)
-        self.arrow_right_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((455, 0), (70, 35)),
-                                             text='Aee RIGHT',
+        self.arrow_right_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((420, 0), (self.button_size_x_menu, self.button_size_y_menu)),
+                                             text='',
+                                             tool_tip_text = 'Arrow right',
+                                             object_id=f"#arrow_right_button",
                                              manager=self.manager)
         # Crete/delete buttons
-        self.create_circle_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((10, 600), (80, 80)),
-                                             text='circle',
+        self.create_circle_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((10, 600), (self.button_size_x_tools, self.button_size_y_tools)),
+                                             text='',
+                                             tool_tip_text = 'Create circle',
+                                             object_id=f"#create_circle_button",
                                              manager=self.manager)
-        self.create_rectangle_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((10, 700), (80, 80)),
-                                             text='rectangle',
+        self.create_rectangle_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((10, 700), (self.button_size_x_tools, self.button_size_y_tools)),
+                                             text='',
+                                             tool_tip_text = 'Create rectangle',
+                                             object_id=f"#create_rectangle_button",
                                              manager=self.manager)
-        self.create_gear_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((10, 800), (80, 80)),
-                                             text='gear',
+        self.create_gear_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((10, 800), (self.button_size_x_tools, self.button_size_y_tools)),
+                                             text='',
+                                             tool_tip_text = 'Create gear',
+                                             object_id=f"#create_gear_button",
                                              manager=self.manager)
-        self.create_nail_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((10, 900), (80, 80)),
-                                             text='Nail',
+        '''
+            ## ??? Create nail # гвозди или пин ???
+        '''
+        self.create_nail_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((10, 900), (self.button_size_x_tools, self.button_size_y_tools)),
+                                             text='',
+                                             tool_tip_text = '## ??? Create nail',
+                                             object_id=f"#create_nail_button",
                                              manager=self.manager)
         # Toolbar buttons
-        self.toolbar_move_with_inert_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((10, 100), (200, 80)),
-                                             text='move_with_inert',
+        self.toolbar_move_with_inert_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((10, 100), (self.button_size_x_tools, self.button_size_y_tools)),
+                                             text='',
+                                             tool_tip_text = 'Ьove an object with inertia',
+                                             object_id=f"#toolbar_move_with_inert_button",
                                              manager=self.manager)
-        self.toolbar_move_without_inert_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((10, 200), (200, 80)),
-                                             text='move_without_inert',
+        self.toolbar_move_without_inert_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((10, 200), (self.button_size_x_tools, self.button_size_y_tools)),
+                                             text='',
+                                             tool_tip_text = 'Movement of an object without inertia',
+                                             object_id=f"#toolbar_move_without_inert_button",
                                              manager=self.manager)
-        self.toolbar_rotate_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((10, 300), (80, 80)),
-                                             text='rotare',
+        self.toolbar_rotate_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((10, 300), (self.button_size_x_tools, self.button_size_y_tools)),
+                                             text='',
+                                             tool_tip_text = 'Rotate object',
+                                             object_id=f"#toolbar_rotate_button",
                                              manager=self.manager)
-        self.toolbar_size_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((10, 400), (80, 80)),
-                                             text='size',
+        self.toolbar_size_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((10, 400), (self.button_size_x_tools, self.button_size_y_tools)),
+                                             text='',
+                                             tool_tip_text = 'Size object',
+                                             object_id=f"#toolbar_size_button",
                                              manager=self.manager)
         # scale buttons
         self.scale_plus_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((100, 980), (100, 70)),
-                                             text='Scale +',
+                                             text='',
+                                             tool_tip_text = 'Scale in',
+                                             object_id=f"#scale_plus_button",
                                              manager=self.manager)
         self.scale_minus_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((200, 980), (100, 70)),
-                                             text='Scale -',
+                                             text='',
+                                             tool_tip_text = 'Scale out',
+                                             object_id=f"#scale_minus_button",
                                              manager=self.manager)
         # physics button
+        '''
+            ДОБАВИТЬ ОПИСАННИЕ К КНОПКАМ в tool_tip_text
+        '''
         self.physics_gravity_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((400, 980), (100, 70)),
-                                             text='Gravity',
+                                             text='',
+                                             tool_tip_text = 'gravity',
+                                             object_id=f"#physics_gravity_button",
                                              manager=self.manager)
         self.physics_air_resistance_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((500, 980), (100, 70)),
-                                             text='Air resistance',
+                                             text='',
+                                             tool_tip_text = 'airr',
+                                             object_id=f"#physics_air_resistance_button",
                                              manager=self.manager)
         self.physics_grid_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((600, 980), (100, 70)),
-                                             text='Grid',
+                                             text='',
+                                             tool_tip_text = 'grid',
+                                             object_id=f"#physics_grid_button",
                                              manager=self.manager)
         # informations buttons
-        self.information_object_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((1000, 200), (100, 70)),
-                                             text='obj INFO',
+        self.information_object_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((1000, 200), (70, 70)),
+                                             text='',
+                                             tool_tip_text = 'Object information',
+                                             object_id=f"#information_object_button",
                                              manager=self.manager)
-        self.information_edit_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((1000, 300), (200, 70)),
-                                             text='obj INGO Edit',
+        self.information_edit_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((1000, 300), (70, 70)),
+                                             text='',
+                                             tool_tip_text = 'Object information edit',
+                                             object_id=f"#information_edit_button",
                                              manager=self.manager)
 
     def handleEvents(self):
@@ -206,11 +261,12 @@ class Game:
     def draw(self):
         self.screen.fill(color=(0, 191, 235))
         self.screen.blit(self.ground, (0, (self.height - (self.height / 6))))
-        pygame.draw.rect(self.screen, (66, 204, 210), (0, 0, 500, 35))
-        pygame.draw.rect(self.screen, (0, 0, 0, 100), (0, 35, 500, 2))
+        pygame.draw.rect(self.screen, (66, 204, 210), (0, 0, 490, 35))
+        pygame.draw.rect(self.screen, (0, 0, 0), (0, 35, 490, 1))
+        pygame.draw.rect(self.screen, (0, 0, 0), (490, 0, 1, 35))
 
         for o in self.objects:
-            o.draw(self.screen)
+            o.draw(self.screen, self.mouse_x, self.mouse_y)
         
         self.manager.draw_ui(self.screen)
 
@@ -225,7 +281,6 @@ class Game:
             self.manager.update(self.clock)
             pygame.display.update()
         self.clock.tick(self.frame_rate)
-
-game = Game("Physics Simulator", 800, 600, 60)
-# game = Game("Physics Simulator", screen_rev.width, screen_rev.height, 60)
+#game = Game("Physics Simulator", 800, 600, 60)
+game = Game("Physics Simulator", screen_rev.width, screen_rev.height, 60)
 game.run()
