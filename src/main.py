@@ -15,12 +15,12 @@ class Game:
         self.frame_rate = frame_rate
         self.game_over = False
         self.objects = []
+        self.selectedObject = gameObject
         self.width = width
         self.height = height
         self.ground = None
         self.groundRect = None
         self.isDragging = False
-        self.DragableObject = 0
         self.mouse_x = screen_rev.width / 2
         self.mouse_y = screen_rev.height / 2
         self.cursorObjectDelta = [0, 0]
@@ -189,16 +189,18 @@ class Game:
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
+                    self.selectedObject = gameObject
+
                     for i in range(len(self.objects)):            
                         if self.objects[i].isIntersect(event):
+                            self.selectedObject = self.objects[i]
                             self.isDragging = True
-                            self.DragableObject = i
                             break
 
                     if(self.isDragging):
                         self.mouse_x, self.mouse_y = event.pos
-                        self.cursorObjectDelta[0] = self.objects[i].x - self.mouse_x
-                        self.cursorObjectDelta[1] = self.objects[i].y - self.mouse_y
+                        self.cursorObjectDelta[0] = self.selectedObject.x - self.mouse_x
+                        self.cursorObjectDelta[1] = self.selectedObject.y - self.mouse_y
 
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:            
@@ -207,8 +209,8 @@ class Game:
             if event.type == pygame.MOUSEMOTION:
                 if self.isDragging:
                     self.mouse_x, self.mouse_y = event.pos
-                    self.objects[self.DragableObject].x = self.mouse_x + self.cursorObjectDelta[0]
-                    self.objects[self.DragableObject].y = self.mouse_y + self.cursorObjectDelta[1]
+                    self.selectedObject.x = self.mouse_x + self.cursorObjectDelta[0]
+                    self.selectedObject.y = self.mouse_y + self.cursorObjectDelta[1]
 
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
                 self.UIHandleEvents(event)
