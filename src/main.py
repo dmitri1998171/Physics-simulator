@@ -227,7 +227,7 @@ class Game:
                                 self.properties_edit_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0,100), (200,50)),
                                                     text='Info see',
                                                     container=self.properties,
-                                                    tool_tip_text = 'Info see',
+                                                    tool_tip_text = 'OBJ Info see',
                                                     manager=self.manager_properties)
                                 print('Debug: RMB click')        
                         break
