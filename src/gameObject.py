@@ -1,4 +1,4 @@
-import random, pygame
+import random, pygame, math
 
 class GameObject:
     def __init__(self, screen, x, y):
@@ -14,19 +14,13 @@ class GameObject:
         self.x = x
         self.y = y
         self.rotation = []
-        self.color_r = 0
-        self.color_g = 0
-        self.color_b = 0
 
+        self.object = pygame.rect
+        self.canDragging = True # Для работы фиксатора
+        self.color = (random.randint(0, 256), random.randint(0, 256), random.randint(0, 256))
 
-    def randomizeColor(self):
-        self.color_r = random.randint(0, 256)
-        self.color_g = random.randint(0, 256)
-        self.color_b = random.randint(0, 256)
-
-    def draw(self, screen, x, y):
+    def draw(self, screen):
         pass
-
 
     def move(self, dx, dy): 
         pass
@@ -35,55 +29,60 @@ class GameObject:
         if self.speed == [0, 0]:
             return
 
-        # self.move(self.speed)
+    def isIntersect(self, event):
+        if (self.object.collidepoint(event.pos)):
+            return True
+        else:
+            return False  
     
-
 class Circle(GameObject):
     def __init__(self, screen, x, y):
         super().__init__(screen, x, y)
-        super().randomizeColor()
 
-        self.x = x
-        self.y = y
         self.radius = 50
 
-    def draw(self, screen, x, y):
-        self.x = x
-        self.y = y
-        self.circle = pygame.draw.circle(screen, (self.color_r, self.color_g, self.color_b), (self.x, self.y), self.radius)
-
+    def draw(self, screen):
+        self.object = pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius)
 
 class Rectangle(GameObject):
     def __init__(self, screen, x, y):
         super().__init__(screen, x, y)
-        super().randomizeColor()
-        # super().update()
 
-        self.x = x
-        self.y = y
         self.w = 100
         self.h = 100
 
-    def draw(self, screen, x, y):
-        self.x = x
-        self.y = y
-        self.rectangle = pygame.draw.rect(screen, (self.color_r, self.color_g, self.color_b), (self.x, self.y, self.w, self.h))
+    def draw(self, screen):
+        self.object = pygame.draw.rect(screen, self.color, (self.x, self.y, self.w, self.h))     
 
-    # @property
-    # def get_draw(self):
-    #    return self.rectangle
+class Gear(GameObject):
+    def __init__(self, screen, x, y):
+        super().__init__(screen, x, y)
 
-    # @property
-    def getObject(self):
-        return self.rectangle
+    def draw(self, screen):
+        inner_radius = 0
+        outer_radius = 100
+        tooth_depth = 15
+        teeth = 36
+        angle = 0
 
-    def isIntersect(self, event):
-        if (self.rectangle.collidepoint(event.pos)):
-            print("debug: isIntersect True")
-            return True
-        else:
-            print("debug: isIntersect False")
-            return False      
+        r0 = inner_radius
+        r1 = 100 - tooth_depth / 2.0 
+        r2 = outer_radius + tooth_depth / 2.0
+        da = 2.0 * math.pi / teeth / 4.0
 
-    # def move(self, event):
-        # pygame.Rect.move_ip(self.circle, event.rel, 0)
+        vertexes = []
+        vertex = []
+
+        for i in range(teeth):
+            angle = i * 2.0 * math.pi / teeth
+
+            vertex = (self.x + (r1 * math.cos(angle)), self.y + (r1 * math.sin(angle)))
+            vertexes.append(vertex)
+            vertex = (self.x + (r2 * math.cos(angle + da)), self.y + (r2 * math.sin(angle)))
+            vertexes.append(vertex)
+            vertex = (self.x + (r2 * math.cos(angle + (da * 2))), self.y + (r2 * math.sin(angle + (da * 2))))
+            vertexes.append(vertex)
+            vertex = (self.x + (r1 * math.cos(angle + (da * 3))), self.y + (r1 * math.sin(angle + (da * 3))))
+            vertexes.append(vertex)
+
+        self.object = pygame.draw.polygon(screen, self.color, vertexes)
