@@ -36,7 +36,10 @@ class Game:
         self.groundRect = self.ground.get_rect()
 
         # pygame_gui buttons
+        self.propertiesWindowsCount = 0
+
         self.manager = pygame_gui.UIManager((screen_rev.width, screen_rev.height), '../ext/theme.json')
+        self.manager_properties = pygame_gui.UIManager((screen_rev.width, screen_rev.height), '../ext/theme_properties.json')
         self.button_size_x_menu = screen_rev.width / 100 * 2.95
         self.button_size_y_menu = screen_rev.height / 100 * 2.23
 
@@ -183,20 +186,58 @@ class Game:
             if event.type == KEYUP:
                 if event.key == K_ESCAPE:
                      sys.exit()
-
+            
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    for i in range(len(self.objects)):            
-                        if self.objects[i].isIntersect(event):
+                self.isPropertiesClose = True
+                for i in range(len(self.objects)):            
+                    if self.objects[i].isIntersect(event):
+                        if event.button == 1:
                             self.selectedObject = self.objects[i]
                             self.isDragging = True
-                            break
 
-                    if(self.selectedObject.canDragging and self.isDragging):
-                        self.mouse_x, self.mouse_y = event.pos
-                        self.cursorObjectDelta[0] = self.selectedObject.x - self.mouse_x
-                        self.cursorObjectDelta[1] = self.selectedObject.y - self.mouse_y
+                            if(self.selectedObject.canDragging and self.isDragging):
+                                self.mouse_x, self.mouse_y = event.pos
+                                self.cursorObjectDelta[0] = self.selectedObject.x - self.mouse_x
+                                self.cursorObjectDelta[1] = self.selectedObject.y - self.mouse_y   
+                        # MENU RBM
+                        if event.button == 3:
+                            self.isPropertiesClose = False
+                            self.propertiesWindowsCount = self.propertiesWindowsCount + 1
+                            if self.propertiesWindowsCount >= 2:
+                                self.properties = 0
+                                #self.properties.hide()
+                                print(f'self.propertiesWindowsCount > 2:{self.propertiesWindowsCount}')
+                            if self.isPropertiesClose == False:
+                                self.selectedObject = self.objects[i]
+                                self.properties = pygame_gui.elements.UIWindow(pygame.Rect(self.selectedObject.x,self.selectedObject.y ,200,200),
+                                                        window_display_title = 'Properties',
+                                                        visible=True,
+                                                        object_id=f"#caop",
+                                                        manager=self.manager_properties)
+                                self.properties_edit_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0,0), (200,50)),
+                                                    text='Delete',
+                                                    container=self.properties,
+                                                    tool_tip_text = 'Delete obj',
+                                                    manager=self.manager_properties)
+                                self.properties_fix_object_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0,50), (200,50)),
+                                                    text='Fix object',
+                                                    container=self.properties,
+                                                    tool_tip_text = 'Fix object1',
+                                                    manager=self.manager_properties)
+                                self.properties_edit_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0,100), (200,50)),
+                                                    text='Info see',
+                                                    container=self.properties,
+                                                    tool_tip_text = 'OBJ Info see',
+                                                    manager=self.manager_properties)
+                                print('Debug: RMB click')        
+                        break
 
+
+            if event.type == pygame_gui.UI_WINDOW_CLOSE:
+                if event.ui_element == self.properties:
+                    self.propertiesWindowsCount = self.propertiesWindowsCount - 1
+                    print("Window closed")
+            
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:            
                     self.isDragging = False
@@ -211,6 +252,7 @@ class Game:
                 self.UIHandleEvents(event)
 
             self.manager.process_events(event)
+            self.manager_properties.process_events(event)
 
     def UIHandleEvents(self, event):
         # menu button
@@ -292,6 +334,7 @@ class Game:
             o.draw(self.screen)
         
         self.manager.draw_ui(self.screen)
+        self.manager_properties.draw_ui(self.screen)
 
     def run(self):
         self.clock = self.clock.tick(60)/1000.0
@@ -301,8 +344,10 @@ class Game:
             self.draw()
 
             self.manager.update(self.clock)
+            self.manager_properties.update(self.clock)
             pygame.display.update()
         self.clock.tick(self.frame_rate)
+        
 
 
 game = Game("Physics Simulator", screen_rev.width, screen_rev.height, 60)
