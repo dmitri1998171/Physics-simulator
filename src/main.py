@@ -236,7 +236,7 @@ class Game:
                                 self.properties_edit_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0,0), (200,50)),
                                                     text='Delete',
                                                     container=self.properties,
-                                                    tool_tip_text = 'Delete1',
+                                                    tool_tip_text = 'Delete',
                                                     manager=self.manager_properties)
                                 self.properties_fix_object_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0,50), (200,50)),
                                                     text='Fix object',
