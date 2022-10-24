@@ -27,13 +27,13 @@ class Game:
         self.cursorObjectDelta = [0, 0]
 
         self.IsGridShow = False
-        self.grid_step = 100
-        self.grid_color = (255, 255, 0)
+        self.grid_step = screen_rev.width * 0.01
+        self.grid_color = (200,200,200)
         self.grid_x = math.ceil(screen_rev.width / self.grid_step)
         self.grid_y = math.ceil(screen_rev.height / self.grid_step)
 
-        self.grid_x = math.ceil(screen_rev.width / 100)
-        self.grid_y = math.ceil(screen_rev.height / 100)
+        #self.grid_x = math.ceil(screen_rev.width / 100)
+        #self.grid_y = math.ceil(screen_rev.height / 100)
         print(f'x {self.grid_x}')
         print(f'y {self.grid_y}')
 
@@ -46,10 +46,6 @@ class Game:
         self.ground = pygame.Surface(size=(self.width, self.height / 6))
         self.ground.fill((0, 200, 0))
         self.groundRect = self.ground.get_rect()
-
-        self.objects.append(gameObject.Gear(self.screen, 300, 300))
-        self.objects.append(gameObject.Rectangle(self.screen, 200, 200))
-        self.objects.append(gameObject.Circle(self.screen, 200, 200))
 
         # pygame_gui buttons
         self.propertiesWindowsCount = 0
@@ -447,8 +443,16 @@ class Game:
             #for i in range(1, border):
             #    pygame.draw.rect(surf, border_color, (border-i, border-i, width, height), 1)
         if self.IsGridShow == True:
-            for i in range(self.grid_x): pygame.draw.aaline(self.screen, self.grid_color,[i * self.grid_step, 0], [i * self.grid_step, screen_rev.height])
-            for i in range(self.grid_y): pygame.draw.aaline(self.screen, self.grid_color,[0, i * self.grid_step], [screen_rev.width, i * self.grid_step])
+            for i in range(self.grid_x):
+                if i % 4 == 0:
+                    pygame.draw.line(self.screen, self.grid_color,[i * self.grid_step, 0], [i * self.grid_step, screen_rev.height], 3)
+                else:
+                    pygame.draw.aaline(self.screen, self.grid_color,[i * self.grid_step, 0], [i * self.grid_step, screen_rev.height])
+            for i in range(self.grid_y):
+                if i % 4 == 0:
+                    pygame.draw.line(self.screen, self.grid_color,[0, i * self.grid_step], [screen_rev.width, i * self.grid_step], 3)
+                else:
+                    pygame.draw.aaline(self.screen, self.grid_color,[0, i * self.grid_step], [screen_rev.width, i * self.grid_step])
 
         create_rect(self.screen, self.button_size_x_menu * 6.5, self.button_size_y_menu, 2, (66, 204, 210), (0, 0, 0))
 
