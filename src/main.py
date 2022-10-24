@@ -17,33 +17,24 @@ class Game:
         self.game_over = False
         self.objects = []
         self.selectedObject = gameObject.GameObject(0, 0, 0)
-        self.width = width
-        self.height = height
-        self.ground = None
-        self.groundRect = None
         self.isDragging = False
         self.mouse_x = screen_rev.width / 2
         self.mouse_y = screen_rev.height / 2
         self.cursorObjectDelta = [0, 0]
 
         self.IsGridShow = False
-        self.grid_step = screen_rev.width * 0.01
-        self.grid_color = (200,200,200)
+        self.grid_step = screen_rev.width * 0.01    # 1% от screen width
+        self.grid_color = (200, 200, 200)
         self.grid_x = math.ceil(screen_rev.width / self.grid_step)
         self.grid_y = math.ceil(screen_rev.height / self.grid_step)
-
-        #self.grid_x = math.ceil(screen_rev.width / 100)
-        #self.grid_y = math.ceil(screen_rev.height / 100)
-        print(f'x {self.grid_x}')
-        print(f'y {self.grid_y}')
 
         pygame.init()
         pygame.font.init()
         pygame.display.set_caption(caption)
-        self.screen = pygame.display.set_mode((width, height), FULLSCREEN)
+        self.screen = pygame.display.set_mode((screen_rev.width, screen_rev.height), FULLSCREEN)
         self.clock = pygame.time.Clock()
 
-        self.ground = pygame.Surface(size=(self.width, self.height / 6))
+        self.ground = pygame.Surface(size=(screen_rev.width, screen_rev.height / 6))
         self.ground.fill((0, 200, 0))
         self.groundRect = self.ground.get_rect()
 
@@ -52,10 +43,7 @@ class Game:
         self.isPropertiesClose = False
 
         self.manager = pygame_gui.UIManager((screen_rev.width, screen_rev.height), '../ext/theme.json')
-        #self.manager_properties = pygame_gui.UIManager((screen_rev.width, screen_rev.height), '../ext/theme_properties.json')
-        #self.manager_object_info = pygame_gui.UIManager((screen_rev.width, screen_rev.height), '../ext/theme_object.json')
-        ###
-        print('=============================')
+        
         self.button_size_x_menu = 70
         self.button_size_y_menu = 35
 
@@ -120,8 +108,6 @@ class Game:
             self.button_pos_x_tools = 0
             self.button_pos_y_tools = screen_rev.height/5
 
-        print('=============================')
-        
         self.menuButtons()
         
     def menuButtons(self):
@@ -243,12 +229,7 @@ class Game:
                                                 tool_tip_text = 'Object information edit',
                                                 object_id=f"#information_edit_button",
                                                 manager=self.manager)
-        self.exit_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((screen_rev.width - self.button_size_x_bottom_tool,0), (self.button_size_x_bottom_tool, self.button_size_y_bottom_tool)),
-                                                text='Q',
-                                                tool_tip_text = 'Exit',
-                                                object_id=f"#exit_button",
-                                                manager=self.manager)
-
+        
     def handleEvents(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT: 
@@ -305,25 +286,6 @@ class Game:
                                                     manager=self.manager)
                                 print('Debug: RMB menu is open')        
                         break
-
-            '''
-            Error:
-            File "D:\WORKS\PS2\Physics-simulator\src\main.py", line 294, in handleEvents
-                if event.ui_element == self.properties:
-            AttributeError: 'Game' object has no attribute 'properties'
-
-            !!!!!!!!! При нажатии на self.information_edit_window
-
-
-            if event.type == pygame_gui.UI_WINDOW_CLOSE:
-                if event.ui_element == self.properties:
-                    self.propertiesWindowsCount = self.propertiesWindowsCount - 1
-                    print("Manual Window closed 1")
-                if event.ui_element == self.information_edit_window:
-                    print("Manual Window closed 2")
-                else:
-                    pass
-            '''
             
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:            
@@ -428,8 +390,7 @@ class Game:
                                                         object_id=f"#information_edit_window",
                                                         manager=self.manager)
             print('information_edit_button pressed')
-        if event.ui_element == self.exit_button:
-            pygame.kill() # Кривой выход
+        
         #if event.ui_element == self.properties_delete_button:
         #    print('MENU properties_delete_button pressed')
 
@@ -439,26 +400,31 @@ class Game:
 
     def draw(self):
         self.screen.fill(color=(0, 191, 235))
-        self.screen.blit(self.ground, (0, (self.height - (self.height / 6))))
+        self.screen.blit(self.ground, (0, (screen_rev.height - (screen_rev.height / 6))))
+        
         # Draw rectangle with a borders
         def create_rect(surf, width, height, border, color, border_color):
             pygame.draw.rect(surf, color, (border, border, width, height), 0)
-            #for i in range(1, border):
-            #    pygame.draw.rect(surf, border_color, (border-i, border-i, width, height), 1)
-        if self.IsGridShow == True:
-            for i in range(self.grid_x):
-                if i % 4 == 0:
-                    pygame.draw.line(self.screen, self.grid_color,[i * self.grid_step, 0], [i * self.grid_step, screen_rev.height], 3)
-                else:
-                    pygame.draw.aaline(self.screen, self.grid_color,[i * self.grid_step, 0], [i * self.grid_step, screen_rev.height])
-            for i in range(self.grid_y):
-                if i % 4 == 0:
-                    pygame.draw.line(self.screen, self.grid_color,[0, i * self.grid_step], [screen_rev.width, i * self.grid_step], 3)
-                else:
-                    pygame.draw.aaline(self.screen, self.grid_color,[0, i * self.grid_step], [screen_rev.width, i * self.grid_step])
+            
+            for i in range(1, border):
+               pygame.draw.rect(surf, border_color, (border-i, border-i, width, height), 1)
+        
+        def createGrid():
+            if self.IsGridShow == True:
+                for i in range(self.grid_x):
+                    if i % 4 == 0:
+                        pygame.draw.line(self.screen, self.grid_color,[i * self.grid_step, 0], [i * self.grid_step, screen_rev.height], 3)
+                    else:
+                        pygame.draw.aaline(self.screen, self.grid_color,[i * self.grid_step, 0], [i * self.grid_step, screen_rev.height])
+                for i in range(self.grid_y):
+                    if i % 4 == 0:
+                        pygame.draw.line(self.screen, self.grid_color,[0, i * self.grid_step], [screen_rev.width, i * self.grid_step], 3)
+                    else:
+                        pygame.draw.aaline(self.screen, self.grid_color,[0, i * self.grid_step], [screen_rev.width, i * self.grid_step])
 
         create_rect(self.screen, self.button_size_x_menu * 6.5, self.button_size_y_menu, 2, (66, 204, 210), (0, 0, 0))
-
+        createGrid()
+        
         for o in self.objects:
             o.draw(self.screen)
         
@@ -477,7 +443,6 @@ class Game:
             pygame.display.update()
         self.clock.tick(self.frame_rate)
         
-
 
 game = Game("Physics Simulator", screen_rev.width, screen_rev.height, 60)
 game.run()
