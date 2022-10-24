@@ -1,5 +1,6 @@
 import pygame, sys
 import pygame_gui
+import math
 
 from pygame.locals import *
 from screeninfo import get_monitors # Получение разрешение экрана @eto-ban
@@ -25,6 +26,17 @@ class Game:
         self.mouse_y = screen_rev.height / 2
         self.cursorObjectDelta = [0, 0]
 
+        self.IsGridShow = False
+        self.grid_step = screen_rev.width * 0.01
+        self.grid_color = (200,200,200)
+        self.grid_x = math.ceil(screen_rev.width / self.grid_step)
+        self.grid_y = math.ceil(screen_rev.height / self.grid_step)
+
+        #self.grid_x = math.ceil(screen_rev.width / 100)
+        #self.grid_y = math.ceil(screen_rev.height / 100)
+        print(f'x {self.grid_x}')
+        print(f'y {self.grid_y}')
+
         pygame.init()
         pygame.font.init()
         pygame.display.set_caption(caption)
@@ -35,75 +47,112 @@ class Game:
         self.ground.fill((0, 200, 0))
         self.groundRect = self.ground.get_rect()
 
-        self.objects.append(gameObject.Gear(self.screen, 300, 300))
-        self.objects.append(gameObject.Rectangle(self.screen, 200, 200))
-        self.objects.append(gameObject.Circle(self.screen, 200, 200))
-
         # pygame_gui buttons
         self.propertiesWindowsCount = 0
         self.isPropertiesClose = False
 
         self.manager = pygame_gui.UIManager((screen_rev.width, screen_rev.height), '../ext/theme.json')
-        self.manager_properties = pygame_gui.UIManager((screen_rev.width, screen_rev.height), '../ext/theme_properties.json')
-
-        self.button_size_x_menu = 75
+        #self.manager_properties = pygame_gui.UIManager((screen_rev.width, screen_rev.height), '../ext/theme_properties.json')
+        #self.manager_object_info = pygame_gui.UIManager((screen_rev.width, screen_rev.height), '../ext/theme_object.json')
+        ###
+        print('=============================')
+        self.button_size_x_menu = 70
         self.button_size_y_menu = 35
 
-        self.properties_size_x_button = 150
-        self.properties_size_y_button = 40
-        
-        self.button_size_x_tools = 60
-        self.button_size_y_tools = 60
-
-        self.button_size_x_bottom_tool = 60
-        self.button_size_y_bottom_tool = 60
-
-        self.button_pos_x_tools = 0
-        self.button_pos_y_tools = screen_rev.height /4
-
-        if screen_rev.width < 1360:
+        if 1024 >= screen_rev.width:
+            print(f'IF 1000 > {screen_rev.width}')
+            self.button_size_x_menu = 50
+            self.button_size_y_menu = 25
+            self.properties_size_x_button = 100
+            self.properties_size_y_button = 30
             self.button_size_x_tools = 50
             self.button_size_y_tools = 50
-            self.button_size_x_bottom_tool = 40
-            self.button_size_y_bottom_tool = 40
-
-            self.button_pos_y_tools = screen_rev.height /5
-            print('screen_rev.width < 1360')
+            self.button_size_x_bottom_tool = 50
+            self.button_size_y_bottom_tool = 50
+            self.button_pos_x_tools = 0
+            self.button_pos_y_tools = screen_rev.height/15
+        elif 1366 >= screen_rev.width:
+            print(f'IF 1366 > {screen_rev.width}')
+            self.button_size_x_menu = 70
+            self.button_size_y_menu = 35
+            self.properties_size_x_button = 100
+            self.properties_size_y_button = 30
+            self.button_size_x_tools = 55
+            self.button_size_y_tools = 55
+            self.button_size_x_bottom_tool = 50
+            self.button_size_y_bottom_tool = 50
+            self.button_pos_x_tools = 0
+            self.button_pos_y_tools = screen_rev.height/6
+        elif 2560 >= screen_rev.width:
+            print(f'IF 2560 > {screen_rev.width}')
+            self.button_size_x_menu = 90
+            self.button_size_y_menu = 45
+            self.properties_size_x_button = 150
+            self.properties_size_y_button = 40
+            self.button_size_x_tools = 65
+            self.button_size_y_tools = 65
+            self.button_size_x_bottom_tool = 65
+            self.button_size_y_bottom_tool = 65
+            self.button_pos_x_tools = 0
+            self.button_pos_y_tools = screen_rev.height/5
+        elif 3840 >= screen_rev.width:
+            print(f'IF 3840 > {screen_rev.width}')
+            self.button_size_x_menu = 150
+            self.button_size_y_menu = 75
+            self.properties_size_x_button = 200
+            self.properties_size_y_button = 50
+            self.button_size_x_tools = 85
+            self.button_size_y_tools = 85
+            self.button_size_x_bottom_tool = 85
+            self.button_size_y_bottom_tool = 85
+            self.button_pos_x_tools = 0
+            self.button_pos_y_tools = screen_rev.height/5  
         else:
-            pass
+            print(f'else > {screen_rev.width}')
+            self.button_size_x_menu = 70
+            self.button_size_y_menu = 35
+            self.properties_size_x_button = 150
+            self.properties_size_y_button = 40
+            self.button_size_x_tools = 65
+            self.button_size_y_tools = 65
+            self.button_size_x_bottom_tool = 65
+            self.button_size_y_bottom_tool = 65
+            self.button_pos_x_tools = 0
+            self.button_pos_y_tools = screen_rev.height/5
 
+        print('=============================')
         
         self.menuButtons()
         
     def menuButtons(self):
         #menu buttons
-        self.reset_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 0), (self.button_size_x_menu, self.button_size_y_menu)),
+        self.reset_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((self.button_size_x_menu * 0, 0), (self.button_size_x_menu, self.button_size_y_menu)),
                                             text='',
                                             tool_tip_text = 'Reset',
                                             object_id=f"#reset_button",
                                             manager=self.manager)
-        self.settings_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((70, 0), (self.button_size_x_menu, self.button_size_y_menu)),
+        self.settings_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((self.button_size_x_menu * 1, 0), (self.button_size_x_menu, self.button_size_y_menu)),
                                             text='',
                                             tool_tip_text = 'Settings',
                                             object_id=f"#settings_button",
                                             manager=self.manager)
-        self.help_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((140, 0), (self.button_size_x_menu, self.button_size_y_menu)),
+        self.help_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((self.button_size_x_menu * 2, 0), (self.button_size_x_menu, self.button_size_y_menu)),
                                             text='',
                                             tool_tip_text = 'Help',
                                             object_id=f"#help_button",
                                             manager=self.manager)
         # simulation button
-        self.arrow_left_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((280, 0), (self.button_size_x_menu, self.button_size_y_menu)),
+        self.arrow_left_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((self.button_size_x_menu * 3.5, 0), (self.button_size_x_menu, self.button_size_y_menu)),
                                             text='',
                                             tool_tip_text = 'Arrow left',
                                             object_id=f"#arrow_left_button",
                                             manager=self.manager)
-        self.start_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 0), (self.button_size_x_menu, self.button_size_y_menu)),
+        self.start_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((self.button_size_x_menu * 4.5, 0), (self.button_size_x_menu, self.button_size_y_menu)),
                                             text='',
                                             tool_tip_text = 'Start',
                                             object_id=f"#start_button",
                                             manager=self.manager)
-        self.arrow_right_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((420, 0), (self.button_size_x_menu, self.button_size_y_menu)),
+        self.arrow_right_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((self.button_size_x_menu * 5.5, 0), (self.button_size_x_menu, self.button_size_y_menu)),
                                             text='',
                                             tool_tip_text = 'Arrow right',
                                             object_id=f"#arrow_right_button",
@@ -194,6 +243,11 @@ class Game:
                                                 tool_tip_text = 'Object information edit',
                                                 object_id=f"#information_edit_button",
                                                 manager=self.manager)
+        self.exit_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((screen_rev.width - self.button_size_x_bottom_tool,0), (self.button_size_x_bottom_tool, self.button_size_y_bottom_tool)),
+                                                text='Q',
+                                                tool_tip_text = 'Exit',
+                                                object_id=f"#exit_button",
+                                                manager=self.manager)
 
     def handleEvents(self):
         for event in pygame.event.get():
@@ -229,30 +283,47 @@ class Game:
                                 self.properties = pygame_gui.elements.UIWindow(pygame.Rect(self.selectedObject.x,self.selectedObject.y ,self.properties_size_x_button ,self.properties_size_y_button * 3),
                                                         window_display_title = 'Properties',
                                                         visible=True,
-                                                        object_id=f"#caop",
-                                                        manager=self.manager_properties)
-                                self.properties_edit_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0,0), (self.properties_size_x_button,self.properties_size_y_button)),
+                                                        object_id=f"#properties_menu",
+                                                        manager=self.manager)
+                                self.properties_delete_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0,0), (self.properties_size_x_button,self.properties_size_y_button)),
                                                     text='Delete',
                                                     container=self.properties,
                                                     tool_tip_text = 'Delete obj',
-                                                    manager=self.manager_properties)
+                                                    object_id=f"#properties_button",
+                                                    manager=self.manager)
                                 self.properties_fix_object_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0,self.properties_size_y_button * 1), (self.properties_size_x_button,self.properties_size_y_button)),
                                                     text='Fix object',
                                                     container=self.properties,
                                                     tool_tip_text = 'Fix object1',
-                                                    manager=self.manager_properties)
+                                                    object_id=f"#properties_button",
+                                                    manager=self.manager)
                                 self.properties_edit_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0,self.properties_size_y_button * 2), (self.properties_size_x_button,self.properties_size_y_button)),
                                                     text='Info see',
                                                     container=self.properties,
                                                     tool_tip_text = 'OBJ Info see',
-                                                    manager=self.manager_properties)
+                                                    object_id=f"#properties_button",
+                                                    manager=self.manager)
                                 print('Debug: RMB menu is open')        
                         break
-            
+
+            '''
+            Error:
+            File "D:\WORKS\PS2\Physics-simulator\src\main.py", line 294, in handleEvents
+                if event.ui_element == self.properties:
+            AttributeError: 'Game' object has no attribute 'properties'
+
+            !!!!!!!!! При нажатии на self.information_edit_window
+
+
             if event.type == pygame_gui.UI_WINDOW_CLOSE:
                 if event.ui_element == self.properties:
                     self.propertiesWindowsCount = self.propertiesWindowsCount - 1
-                    print("Manual Window closed")
+                    print("Manual Window closed 1")
+                if event.ui_element == self.information_edit_window:
+                    print("Manual Window closed 2")
+                else:
+                    pass
+            '''
             
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:            
@@ -270,17 +341,27 @@ class Game:
 
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
                 self.UIHandleEvents(event)
-
+            # pygame_gui event
             self.manager.process_events(event)
-            self.manager_properties.process_events(event)
-
+            #self.manager_properties.process_events(event)
+            
     def UIHandleEvents(self, event):
         # menu button
         if event.ui_element == self.settings_button:
+            self.settingst_window= pygame_gui.elements.UIWindow(pygame.Rect(screen_rev.width / 2 - 200, screen_rev.height / 2 - 150, 400 , 300),
+                                                        window_display_title = 'Settings',
+                                                        visible=True,
+                                                        object_id=f"#settings_window",
+                                                        manager=self.manager)
             print('settings_button pressed')
         if event.ui_element == self.reset_button:
             print('reset_button pressed')
         if event.ui_element == self.help_button:
+            self.help_window= pygame_gui.elements.UIWindow(pygame.Rect(self.button_size_x_menu * 2, self.button_size_y_menu + 10, 400 , 300),
+                                                        window_display_title = 'Help',
+                                                        visible=True,
+                                                        object_id=f"#help_window",
+                                                        manager=self.manager)
             print('help_button pressed')
         # simulation button
         if event.ui_element == self.arrow_left_button:
@@ -300,8 +381,7 @@ class Game:
             if(self.selectedObject.canDragging == False):
                 self.selectedObject.canDragging = True
             else:
-                self.selectedObject.canDragging = False
-                
+                self.selectedObject.canDragging = False   
             print('create_nail_button pressed')
 
         # Toolbar buttons
@@ -324,12 +404,31 @@ class Game:
         if event.ui_element == self.physics_air_resistance_button:
             print('physics_air_resistance_button pressed')
         if event.ui_element == self.physics_grid_button:
-            print('physics_grid_button pressed')
+            if self.IsGridShow == True:
+                self.IsGridShow = False
+                print('self.IsGridShow = False')
+            elif self.IsGridShow == False:
+                self.IsGridShow = True
+            print('self.IsGridShow = True')
         # informations buttons
         if event.ui_element == self.information_object_button:
+            self.information_object_window= pygame_gui.elements.UIWindow(pygame.Rect(screen_rev.width - self.properties_size_x_button - 200,self.properties_size_y_button * 1 ,250 ,300),
+                                                        window_display_title = 'information object',
+                                                        visible=True,
+                                                        object_id=f"#information_edit_window",
+                                                        manager=self.manager)
             print('information_object_button pressed')
         if event.ui_element == self.information_edit_button:
+            self.information_edit_window= pygame_gui.elements.UIWindow(pygame.Rect(screen_rev.width - self.properties_size_x_button - 200,self.properties_size_y_button * 9 ,250 ,300),
+                                                        window_display_title = 'Properties edit',
+                                                        visible=True,
+                                                        object_id=f"#information_edit_window",
+                                                        manager=self.manager)
             print('information_edit_button pressed')
+        if event.ui_element == self.exit_button:
+            pygame.kill() # Кривой выход
+        #if event.ui_element == self.properties_delete_button:
+        #    print('MENU properties_delete_button pressed')
 
     def update(self):
         for o in self.objects:
@@ -338,20 +437,30 @@ class Game:
     def draw(self):
         self.screen.fill(color=(0, 191, 235))
         self.screen.blit(self.ground, (0, (self.height - (self.height / 6))))
-        
         # Draw rectangle with a borders
         def create_rect(surf, width, height, border, color, border_color):
             pygame.draw.rect(surf, color, (border, border, width, height), 0)
-            for i in range(1, border):
-                pygame.draw.rect(surf, border_color, (border-i, border-i, width, height), 1)
-            
-        create_rect(self.screen, 490, 35, 2, (66, 204, 210), (0, 0, 0))
+            #for i in range(1, border):
+            #    pygame.draw.rect(surf, border_color, (border-i, border-i, width, height), 1)
+        if self.IsGridShow == True:
+            for i in range(self.grid_x):
+                if i % 4 == 0:
+                    pygame.draw.line(self.screen, self.grid_color,[i * self.grid_step, 0], [i * self.grid_step, screen_rev.height], 3)
+                else:
+                    pygame.draw.aaline(self.screen, self.grid_color,[i * self.grid_step, 0], [i * self.grid_step, screen_rev.height])
+            for i in range(self.grid_y):
+                if i % 4 == 0:
+                    pygame.draw.line(self.screen, self.grid_color,[0, i * self.grid_step], [screen_rev.width, i * self.grid_step], 3)
+                else:
+                    pygame.draw.aaline(self.screen, self.grid_color,[0, i * self.grid_step], [screen_rev.width, i * self.grid_step])
+
+        create_rect(self.screen, self.button_size_x_menu * 6.5, self.button_size_y_menu, 2, (66, 204, 210), (0, 0, 0))
 
         for o in self.objects:
             o.draw(self.screen)
         
         self.manager.draw_ui(self.screen)
-        self.manager_properties.draw_ui(self.screen)
+        #self.manager_properties.draw_ui(self.screen)
 
     def run(self):
         self.clock = self.clock.tick(60)/1000.0
@@ -361,9 +470,10 @@ class Game:
             self.draw()
 
             self.manager.update(self.clock)
-            self.manager_properties.update(self.clock)
+            #self.manager_properties.update(self.clock)
             pygame.display.update()
         self.clock.tick(self.frame_rate)
+        
 
 
 game = Game("Physics Simulator", screen_rev.width, screen_rev.height, 60)
