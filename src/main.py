@@ -28,6 +28,8 @@ class Game:
         self.grid_x = math.ceil(screen_rev.width / self.grid_step)
         self.grid_y = math.ceil(screen_rev.height / self.grid_step)
 
+        self.properties_delete_button = pygame_gui
+
         pygame.init()
         pygame.font.init()
         pygame.display.set_caption(caption)
@@ -286,15 +288,16 @@ class Game:
                                                     manager=self.manager)
                                 print('Debug: RMB menu is open')        
                         break
+                    else:
+                        if self.isPropertiesClose == True:
+                            print("Window closed by isPropertiesClose == True to False!")
+                            self.properties.kill()
+                            self.isPropertiesClose = False
             
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:            
                     self.isDragging = False
-                    if self.isPropertiesClose == True:
-                        self.properties.kill()
-                        print("Window closed by isPropertiesClose == True to False!")
-                        self.isPropertiesClose = False
-
+                    
             if event.type == pygame.MOUSEMOTION:
                 if(self.selectedObject.canDragging and self.isDragging):
                     self.mouse_x, self.mouse_y = event.pos
@@ -303,9 +306,8 @@ class Game:
 
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
                 self.UIHandleEvents(event)
-            # pygame_gui event
+            
             self.manager.process_events(event)
-            #self.manager_properties.process_events(event)
             
     def UIHandleEvents(self, event):
         # menu button
@@ -391,8 +393,12 @@ class Game:
                                                         manager=self.manager)
             print('information_edit_button pressed')
         
-        #if event.ui_element == self.properties_delete_button:
-        #    print('MENU properties_delete_button pressed')
+        # Submenu buttons
+        if event.ui_element == self.properties_delete_button:
+            print('\n\tMENU properties_delete_button pressed\n')
+            self.objects.remove(self.selectedObject)
+            self.isPropertiesClose = False
+            self.properties.kill()
 
     def update(self):
         for o in self.objects:
@@ -429,7 +435,6 @@ class Game:
             o.draw(self.screen)
         
         self.manager.draw_ui(self.screen)
-        #self.manager_properties.draw_ui(self.screen)
 
     def run(self):
         self.clock = self.clock.tick(60)/1000.0
@@ -439,7 +444,6 @@ class Game:
             self.draw()
 
             self.manager.update(self.clock)
-            #self.manager_properties.update(self.clock)
             pygame.display.update()
         self.clock.tick(self.frame_rate)
         
