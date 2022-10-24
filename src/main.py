@@ -43,17 +43,39 @@ class Game:
         self.button_size_x_menu = screen_rev.width / 100 * 2.95
         self.button_size_y_menu = screen_rev.height / 100 * 2.23
 
-        print(self.button_size_x_menu)
-        print(self.button_size_y_menu)
+        # pygame_gui buttons
+        self.propertiesWindowsCount = 0
+        self.isPropertiesClose = False
+
+        self.manager = pygame_gui.UIManager((screen_rev.width, screen_rev.height), '../ext/theme.json')
+        self.manager_properties = pygame_gui.UIManager((screen_rev.width, screen_rev.height), '../ext/theme_properties.json')
+
+        self.button_size_x_menu = 75
+        self.button_size_y_menu = 35
+
+        self.properties_size_x_button = 150
+        self.properties_size_y_button = 40
         
-        self.button_size_x_tools = 80
-        self.button_size_y_tools = 80
-        
-        self.button_pos_x_tools = 0
-        self.button_pos_y_tools = 0
+        self.button_size_x_tools = 60
+        self.button_size_y_tools = 60
 
         self.button_size_x_bottom_tool = 60
         self.button_size_y_bottom_tool = 60
+
+        self.button_pos_x_tools = 0
+        self.button_pos_y_tools = screen_rev.height /4
+
+        if screen_rev.width < 1360:
+            self.button_size_x_tools = 50
+            self.button_size_y_tools = 50
+            self.button_size_x_bottom_tool = 40
+            self.button_size_y_bottom_tool = 40
+
+            self.button_pos_y_tools = screen_rev.height /5
+            print('screen_rev.width < 1360')
+        else:
+            pass
+
         
         self.menuButtons()
         
@@ -186,7 +208,7 @@ class Game:
             if event.type == KEYUP:
                 if event.key == K_ESCAPE:
                      sys.exit()
-
+            
             if event.type == pygame.MOUSEBUTTONDOWN:
                 self.isPropertiesClose = True
                 for i in range(len(self.objects)):            
@@ -194,7 +216,6 @@ class Game:
                         if event.button == 1:
                             self.selectedObject = self.objects[i]
                             self.isDragging = True
-
                             if(self.selectedObject.canDragging and self.isDragging):
                                 self.mouse_x, self.mouse_y = event.pos
                                 self.cursorObjectDelta[0] = self.selectedObject.x - self.mouse_x
@@ -241,6 +262,10 @@ class Game:
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:            
                     self.isDragging = False
+                    if self.isPropertiesClose == True:
+                        self.properties.kill()
+                        print("Window closed by isPropertiesClose == True to False!")
+                        self.isPropertiesClose = False
 
             if event.type == pygame.MOUSEMOTION:
                 if(self.selectedObject.canDragging and self.isDragging):
@@ -271,13 +296,10 @@ class Game:
             print('arrow_right_button pressed')
         # Crete/delete buttons
         if event.ui_element == self.create_circle_button:
-            self.objects.append(gameObject.Circle(self.screen, screen_rev.width / 2, screen_rev.height / 2))
             print('create_circle_button pressed')
         if event.ui_element == self.create_rectangle_button:
-            self.objects.append(gameObject.Rectangle(self.screen, screen_rev.width / 2, screen_rev.height / 2))
             print('create_rectangle_button pressed')
         if event.ui_element == self.create_gear_button:
-            self.objects.append(gameObject.Gear(self.screen, screen_rev.width / 2, screen_rev.height / 2))
             print('create_gear_button pressed')
         if event.ui_element == self.create_nail_button:
             if(self.selectedObject.canDragging == False):
