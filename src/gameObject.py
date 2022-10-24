@@ -86,3 +86,4 @@ class Gear(GameObject):
             vertexes.append(vertex)
 
         self.object = pygame.draw.polygon(screen, self.color, vertexes)
+
