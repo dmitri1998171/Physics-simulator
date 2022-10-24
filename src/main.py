@@ -47,10 +47,6 @@ class Game:
         self.ground.fill((0, 200, 0))
         self.groundRect = self.ground.get_rect()
 
-        self.objects.append(gameObject.Gear(self.screen, 300, 300))
-        self.objects.append(gameObject.Rectangle(self.screen, 200, 200))
-        self.objects.append(gameObject.Circle(self.screen, 200, 200))
-
         # pygame_gui buttons
         self.propertiesWindowsCount = 0
         self.isPropertiesClose = False
@@ -376,10 +372,13 @@ class Game:
             print('arrow_right_button pressed')
         # Crete/delete buttons
         if event.ui_element == self.create_circle_button:
+            self.objects.append(gameObject.Circle(self.screen, screen_rev.width / 2, screen_rev.height / 2))
             print('create_circle_button pressed')
         if event.ui_element == self.create_rectangle_button:
+            self.objects.append(gameObject.Rectangle(self.screen, screen_rev.width / 2, screen_rev.height / 2))
             print('create_rectangle_button pressed')
         if event.ui_element == self.create_gear_button:
+            self.objects.append(gameObject.Gear(self.screen, screen_rev.width / 2, screen_rev.height / 2))
             print('create_gear_button pressed')
         if event.ui_element == self.create_nail_button:
             if(self.selectedObject.canDragging == False):
