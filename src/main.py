@@ -26,6 +26,12 @@ class Game:
         self.mouse_y = screen_rev.height / 2
         self.cursorObjectDelta = [0, 0]
 
+        self.IsGridShow = False
+        self.grid_step = 100
+        self.grid_color = (255, 255, 0)
+        self.grid_x = math.ceil(screen_rev.width / self.grid_step)
+        self.grid_y = math.ceil(screen_rev.height / self.grid_step)
+
         self.grid_x = math.ceil(screen_rev.width / 100)
         self.grid_y = math.ceil(screen_rev.height / 100)
         print(f'x {self.grid_x}')
@@ -402,7 +408,12 @@ class Game:
         if event.ui_element == self.physics_air_resistance_button:
             print('physics_air_resistance_button pressed')
         if event.ui_element == self.physics_grid_button:
-            print('physics_grid_button pressed')
+            if self.IsGridShow == True:
+                self.IsGridShow = False
+                print('self.IsGridShow = False')
+            elif self.IsGridShow == False:
+                self.IsGridShow = True
+            print('self.IsGridShow = True')
         # informations buttons
         if event.ui_element == self.information_object_button:
             self.information_object_window= pygame_gui.elements.UIWindow(pygame.Rect(screen_rev.width - self.properties_size_x_button - 200,self.properties_size_y_button * 1 ,250 ,300),
@@ -435,7 +446,10 @@ class Game:
             pygame.draw.rect(surf, color, (border, border, width, height), 0)
             #for i in range(1, border):
             #    pygame.draw.rect(surf, border_color, (border-i, border-i, width, height), 1)
-            
+        if self.IsGridShow == True:
+            for i in range(self.grid_x): pygame.draw.aaline(self.screen, self.grid_color,[i * self.grid_step, 0], [i * self.grid_step, screen_rev.height])
+            for i in range(self.grid_y): pygame.draw.aaline(self.screen, self.grid_color,[0, i * self.grid_step], [screen_rev.width, i * self.grid_step])
+
         create_rect(self.screen, self.button_size_x_menu * 6.5, self.button_size_y_menu, 2, (66, 204, 210), (0, 0, 0))
 
         for o in self.objects:
