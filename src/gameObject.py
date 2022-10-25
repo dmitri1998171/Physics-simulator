@@ -1,7 +1,11 @@
 import random, pygame, math
+import Box2D 
+from Box2D.b2 import (world, polygonShape, circleShape, staticBody, dynamicBody)
+
+PPM = 100.0  # pixels per meter
 
 class GameObject:
-    def __init__(self, screen, x, y):
+    def __init__(self, screen, world, x, y):
         self.speed = 0          # Скорость
         self.density = 0        # Плотность
         self.mass = 0           # Масса
@@ -19,7 +23,7 @@ class GameObject:
         self.canDragging = True # Для работы фиксатора
         self.color = (random.randint(0, 256), random.randint(0, 256), random.randint(0, 256))
 
-    def draw(self, screen):
+    def draw(self, screen, screen_rev):
         pass
 
     def move(self, dx, dy): 
@@ -36,29 +40,35 @@ class GameObject:
             return False  
     
 class Circle(GameObject):
-    def __init__(self, screen, x, y):
-        super().__init__(screen, x, y)
+    def __init__(self, screen, world, x, y):
+        super().__init__(screen, world, x, y)
 
         self.radius = 50
+        self.body = world.CreateDynamicBody(position=(self.x, self.y))
+        self.circle = self.body.CreateCircleFixture(radius=self.radius, density=1, friction=0.3)
 
-    def draw(self, screen):
+    def draw(self, screen, screen_rev):
+        position = self.body.transform * self.circle.pos * PPM
+        position = (position[0], screen_rev.height - position[1])
+        
         self.object = pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius)
+        self.body.fixture.shape.draw(self.body, self.body.fixture)
 
 class Rectangle(GameObject):
-    def __init__(self, screen, x, y):
-        super().__init__(screen, x, y)
+    def __init__(self, screen, world, x, y):
+        super().__init__(screen, world, x, y)
 
         self.w = 100
         self.h = 100
 
-    def draw(self, screen):
+    def draw(self, screen, screen_rev):
         self.object = pygame.draw.rect(screen, self.color, (self.x, self.y, self.w, self.h))     
 
 class Gear(GameObject):
-    def __init__(self, screen, x, y):
-        super().__init__(screen, x, y)
+    def __init__(self, screen, world, x, y):
+        super().__init__(screen, world, x, y)
 
-    def draw(self, screen):
+    def draw(self, screen, screen_rev):
         inner_radius = 0
         outer_radius = 100
         tooth_depth = 15

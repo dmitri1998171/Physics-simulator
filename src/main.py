@@ -1,3 +1,4 @@
+import gc
 import pygame, sys
 import pygame_gui
 import math
@@ -11,7 +12,6 @@ from Box2D.b2 import (world, polygonShape, circleShape, staticBody, dynamicBody)
 
 import gameObject
 
-PPM = 20.0  # pixels per meter
 TARGET_FPS = 60
 TIME_STEP = 1.0 / TARGET_FPS
 
@@ -24,7 +24,6 @@ class Game:
         self.frame_rate = frame_rate
         self.game_over = False
         self.objects = []
-        self.selectedObject = gameObject.GameObject(0, 0, 0)
         self.isDragging = False
         self.mouse_x = screen_rev.width / 2
         self.mouse_y = screen_rev.height / 2
@@ -44,24 +43,23 @@ class Game:
         self.screen = pygame.display.set_mode((screen_rev.width, screen_rev.height), FULLSCREEN)
         self.clock = pygame.time.Clock()
 
+        self.world = world(gravity=(0, -10), doSleep=True)
+
         self.ground = pygame.Surface(size=(screen_rev.width, screen_rev.height / 6))
         self.ground.fill((0, 200, 0))
         self.groundRect = self.ground.get_rect()
 
-# ################################################
-
-        self.world = Box2D.b2.world(gravity=(0, -10), doSleep=True)
-
         # And a static body to hold the ground shape
         self.ground_body = self.world.CreateStaticBody(
-            position=(0, 0),
-            shapes=polygonShape(box=(50, 1)),
+            position=(0, screen_rev.height - (screen_rev.height / 6)),
+            shapes=polygonShape(box=(screen_rev.width, screen_rev.height / 6)),
         )
+        
+        self.body = self.world.CreateDynamicBody(position=(screen_rev.width / 2, screen_rev.height / 2))
+        self.circle = self.body.CreateCircleFixture(radius=5, density=1, friction=0.3)
 
-        # Create a couple dynamic bodies
-        self.body = self.world.CreateDynamicBody(position=(20, 45))
 
-# ################################################
+        self.selectedObject = gameObject.GameObject(0, self.world, 0, 0)
 
         # pygame_gui buttons
         self.propertiesWindowsCount = 0
@@ -373,14 +371,14 @@ class Game:
             print('arrow_right_button pressed')
         # Crete/delete buttons
         if event.ui_element == self.create_circle_button:
-            self.objects.append(gameObject.Circle(self.screen, screen_rev.width / 2, screen_rev.height / 2))
+            self.objects.append(gameObject.Circle(self.screen, self.world, screen_rev.width / 2, screen_rev.height / 2))
             print('create_circle_button pressed')
         if event.ui_element == self.create_rectangle_button:
-            self.objects.append(gameObject.Rectangle(self.screen, screen_rev.width / 2, screen_rev.height / 2))
-            polygonShape.draw = self.objects[len(self.objects) - 1].draw(self.screen)
+            self.objects.append(gameObject.Rectangle(self.screen, self.world, screen_rev.width / 2, screen_rev.height / 2))
+            # polygonShape.draw = self.objects[len(self.objects) - 1].draw(self.screen)
             print('create_rectangle_button pressed')
         if event.ui_element == self.create_gear_button:
-            self.objects.append(gameObject.Gear(self.screen, screen_rev.width / 2, screen_rev.height / 2))
+            self.objects.append(gameObject.Gear(self.screen, self.world, screen_rev.width / 2, screen_rev.height / 2))
             print('create_gear_button pressed')
         if event.ui_element == self.create_nail_button:
             if(self.selectedObject.canDragging == False):
@@ -493,29 +491,35 @@ class Game:
         createGrid()
         
         for o in self.objects:
-            o.draw(self.screen)
+            o.draw(self.screen, screen_rev)
         
         self.manager.draw_ui(self.screen)
 
     def run(self):
         self.clock = self.clock.tick(TARGET_FPS) / 1000
 
-        def my_draw_polygon(polygon, body, fixture):
-            vertices = [(body.transform * v) * PPM for v in polygon.vertices]
-            vertices = [(v[0], screen_rev.height - v[1]) for v in vertices]
-            pygame.draw.polygon(self.screen, (255, 255, 255), vertices)
-        polygonShape.draw = my_draw_polygon
+        def my_draw_circle(circle, body, fixture):
+            position = body.transform * circle.pos
+            position = (position[0], screen_rev.height - position[1])
+            pygame.draw.circle(self.screen, (255, 255, 255), [int(
+                x) for x in position], int(circle.radius))
+
+        circleShape.draw = my_draw_circle
 
         while not self.game_over:
+            # if(len(self.objects) > 0):
+            #     circleShape.draw = self.objects[0].draw(self.screen, screen_rev)
+            
             self.handleEvents()
             self.update()
             self.draw()
 
 # ################################################
 
-            for body in self.world.bodies:
-                for fixture in self.body.fixtures:
-                    fixture.shape.draw(self.body, fixture)
+            # Draw the world
+            # for body in self.world.bodies:
+            for fixture in self.body.fixtures:
+                fixture.shape.draw(self.body, fixture)
 
             # Make Box2D simulate the physics of our world for one step.
             self.world.Step(TIME_STEP, 10, 10)
