@@ -77,8 +77,6 @@ class Game:
         self.isGravityPressed = False
         self.menuButtons()
 # ################################################
-
-
     def ScreenResolution(self):
         if 1024 >= screen_rev.width:
             print(f'IF 1000 > {screen_rev.width}')
@@ -291,30 +289,7 @@ class Game:
                             if self.isPropertiesClose == False:
                                 self.isPropertiesClose = True
                                 self.selectedObject = self.objects[i]
-                                self.properties = pygame_gui.elements.UIWindow(pygame.Rect(self.selectedObject.x,self.selectedObject.y ,self.properties_size_x_button ,self.properties_size_y_button * 3),
-                                                        window_display_title = 'Properties',
-                                                        visible=True,
-                                                        object_id=f"#properties_menu",
-                                                        manager=self.manager)
-                                self.properties_delete_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0,0), (self.properties_size_x_button,self.properties_size_y_button)),
-                                                    text='Delete',
-                                                    container=self.properties,
-                                                    tool_tip_text = 'Delete obj',
-                                                    object_id=f"#properties_button",
-                                                    manager=self.manager)
-                                self.properties_fix_object_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0,self.properties_size_y_button * 1), (self.properties_size_x_button,self.properties_size_y_button)),
-                                                    text='Fix object',
-                                                    container=self.properties,
-                                                    tool_tip_text = 'Fix object1',
-                                                    object_id=f"#properties_button",
-                                                    manager=self.manager)
-                                self.properties_edit_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0,self.properties_size_y_button * 2), (self.properties_size_x_button,self.properties_size_y_button)),
-                                                    text='Info see',
-                                                    container=self.properties,
-                                                    tool_tip_text = 'OBJ Info see',
-                                                    object_id=f"#properties_button",
-                                                    manager=self.manager)
-                                print('Debug: RMB menu is open')        
+                                self.RBMMenu() # открытие меню на ПКМ
                         break
                     else:
                         if self.isPropertiesClose == True:
@@ -331,12 +306,36 @@ class Game:
                     self.mouse_x, self.mouse_y = event.pos
                     self.selectedObject.x = self.mouse_x + self.cursorObjectDelta[0]
                     self.selectedObject.y = self.mouse_y + self.cursorObjectDelta[1]
-
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
                 self.UIHandleEvents(event)
             
             self.manager.process_events(event)
-            
+    def RBMMenu(self):
+        self.properties = pygame_gui.elements.UIWindow(pygame.Rect(self.selectedObject.x,self.selectedObject.y ,self.properties_size_x_button ,self.properties_size_y_button * 3),
+                                                        window_display_title = 'Properties',
+                                                        visible=True,
+                                                        object_id=f"#properties_menu",
+                                                        manager=self.manager)
+        self.properties_delete_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0,0), (self.properties_size_x_button,self.properties_size_y_button)),
+                            text='Delete',
+                            container=self.properties,
+                            tool_tip_text = 'Delete obj',
+                            object_id=f"#properties_button",
+                            manager=self.manager)
+        self.properties_fix_object_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0,self.properties_size_y_button * 1), (self.properties_size_x_button,self.properties_size_y_button)),
+                            text='Fix object',
+                            container=self.properties,
+                            tool_tip_text = 'Fix object1',
+                            object_id=f"#properties_button",
+                            manager=self.manager)
+        self.properties_edit_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0,self.properties_size_y_button * 2), (self.properties_size_x_button,self.properties_size_y_button)),
+                            text='Info see',
+                            container=self.properties,
+                            tool_tip_text = 'OBJ Info see',
+                            object_id=f"#properties_button",
+                            manager=self.manager)
+        print('Debug: RMB menu is open')
+    
     def UIHandleEvents(self, event):
         # menu button
         if event.ui_element == self.settings_button:
@@ -387,7 +386,7 @@ class Game:
             if(self.selectedObject.canDragging == False):
                 self.selectedObject.canDragging = True
             else:
-                self.selectedObject.canDragging = False   
+                self.selectedObject.canDragging = False  
             print('create_nail_button pressed')
 
         # Toolbar buttons

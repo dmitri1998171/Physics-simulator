@@ -298,5 +298,15 @@
             "enable_close_button": "1",
             "enable_title_bar": "1"
         }
-    } 
+    },
+    "#object_nailed":
+    {
+        "images":
+        {
+            "normal_image":
+            {
+                "path": "../Media/Icons/x-pin.png" 
+            }
+        }
+    }
 }
