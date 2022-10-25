@@ -5,7 +5,15 @@ import math
 from pygame.locals import *
 from screeninfo import get_monitors # Получение разрешение экрана @eto-ban
 
+import Box2D  # The main library
+# Box2D.b2 maps Box2D.b2Vec2 to vec2 (and so on)
+from Box2D.b2 import (world, polygonShape, circleShape, staticBody, dynamicBody)
+
 import gameObject
+
+PPM = 20.0  # pixels per meter
+TARGET_FPS = 60
+TIME_STEP = 1.0 / TARGET_FPS
 
 # Получение разрешения экрана @eto-ban
 for screen_rev in get_monitors():
@@ -39,6 +47,21 @@ class Game:
         self.ground = pygame.Surface(size=(screen_rev.width, screen_rev.height / 6))
         self.ground.fill((0, 200, 0))
         self.groundRect = self.ground.get_rect()
+
+# ################################################
+
+        self.world = Box2D.b2.world(gravity=(0, -10), doSleep=True)
+
+        # And a static body to hold the ground shape
+        self.ground_body = self.world.CreateStaticBody(
+            position=(0, 0),
+            shapes=polygonShape(box=(50, 1)),
+        )
+
+        # Create a couple dynamic bodies
+        self.body = self.world.CreateDynamicBody(position=(20, 45))
+
+# ################################################
 
         # pygame_gui buttons
         self.propertiesWindowsCount = 0
@@ -111,7 +134,11 @@ class Game:
             self.button_pos_y_tools = screen_rev.height/5
 
         self.menuButtons()
-        
+        self.is_start_button_selected = 0
+        self.isAirResistPressed = False
+        self.isGravityPressed = False
+        # self.start_button.select()
+
     def menuButtons(self):
         #menu buttons
         self.reset_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((self.button_size_x_menu * 0, 0), (self.button_size_x_menu, self.button_size_y_menu)),
@@ -331,7 +358,17 @@ class Game:
         if event.ui_element == self.arrow_left_button:
             print('arrow_left_button pressed')
         if event.ui_element == self.start_button:
+            if(self.is_start_button_selected == 0):
+                self.start_button.select()
+
+            self.is_start_button_selected += 1
+
+            if(self.is_start_button_selected > 1):
+                self.start_button.unselect()
+                self.is_start_button_selected = 0
+
             print('start_button pressed')
+
         if event.ui_element == self.arrow_right_button:
             print('arrow_right_button pressed')
         # Crete/delete buttons
@@ -340,6 +377,7 @@ class Game:
             print('create_circle_button pressed')
         if event.ui_element == self.create_rectangle_button:
             self.objects.append(gameObject.Rectangle(self.screen, screen_rev.width / 2, screen_rev.height / 2))
+            polygonShape.draw = self.objects[len(self.objects) - 1].draw(self.screen)
             print('create_rectangle_button pressed')
         if event.ui_element == self.create_gear_button:
             self.objects.append(gameObject.Gear(self.screen, screen_rev.width / 2, screen_rev.height / 2))
@@ -365,18 +403,41 @@ class Game:
             print('scale_plus_button pressed')
         if event.ui_element == self.scale_minus_button:
             print('scale_minus_button pressed')
+        
         # physics button
         if event.ui_element == self.physics_gravity_button:
-            print('physics_gravity_button pressed')
+            if self.isGravityPressed == True:
+                self.physics_gravity_button.unselect()
+                self.isGravityPressed = False
+                print('self.isGravityPressed = False')
+
+            else:
+                self.physics_gravity_button.select()
+                self.isGravityPressed = True
+                print('self.isGravityPressed = True')
+
         if event.ui_element == self.physics_air_resistance_button:
-            print('physics_air_resistance_button pressed')
+            if self.isAirResistPressed == True:
+                self.physics_air_resistance_button.unselect()
+                self.isAirResistPressed = False
+                print('self.isAirResistPressed = False')
+
+            else:
+                self.physics_air_resistance_button.select()
+                self.isAirResistPressed = True
+                print('self.isAirResistPressed = True')
+
         if event.ui_element == self.physics_grid_button:
             if self.IsGridShow == True:
+                self.physics_grid_button.unselect()
                 self.IsGridShow = False
                 print('self.IsGridShow = False')
-            elif self.IsGridShow == False:
+
+            else:
+                self.physics_grid_button.select()
                 self.IsGridShow = True
-            print('self.IsGridShow = True')
+                print('self.IsGridShow = True')
+
         # informations buttons
         if event.ui_element == self.information_object_button:
             self.information_object_window= pygame_gui.elements.UIWindow(pygame.Rect(screen_rev.width - self.properties_size_x_button - 200,self.properties_size_y_button * 1 ,250 ,300),
@@ -437,11 +498,29 @@ class Game:
         self.manager.draw_ui(self.screen)
 
     def run(self):
-        self.clock = self.clock.tick(60)/1000.0
+        self.clock = self.clock.tick(TARGET_FPS) / 1000
+
+        def my_draw_polygon(polygon, body, fixture):
+            vertices = [(body.transform * v) * PPM for v in polygon.vertices]
+            vertices = [(v[0], screen_rev.height - v[1]) for v in vertices]
+            pygame.draw.polygon(self.screen, (255, 255, 255), vertices)
+        polygonShape.draw = my_draw_polygon
+
         while not self.game_over:
             self.handleEvents()
             self.update()
             self.draw()
+
+# ################################################
+
+            for body in self.world.bodies:
+                for fixture in self.body.fixtures:
+                    fixture.shape.draw(self.body, fixture)
+
+            # Make Box2D simulate the physics of our world for one step.
+            self.world.Step(TIME_STEP, 10, 10)
+
+# ################################################
 
             self.manager.update(self.clock)
             pygame.display.update()
