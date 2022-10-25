@@ -14,13 +14,13 @@ import gameObject
 PPM = 20.0  # pixels per meter
 TARGET_FPS = 60
 TIME_STEP = 1.0 / TARGET_FPS
-
-# Получение разрешения экрана @eto-ban
 for screen_rev in get_monitors():
-    print(screen_rev)
+            print(screen_rev)
 
 class Game:
     def __init__(self, caption, width, height, frame_rate):
+        self.ScreenResolution() # Расчет размера кнопок
+
         self.frame_rate = frame_rate
         self.game_over = False
         self.objects = []
@@ -29,15 +29,17 @@ class Game:
         self.mouse_x = screen_rev.width / 2
         self.mouse_y = screen_rev.height / 2
         self.cursorObjectDelta = [0, 0]
-
+# ##########################################
+        # Милиметровка
         self.IsGridShow = False
         self.grid_step = screen_rev.width * 0.01    # 1% от screen width
         self.grid_color = (200, 200, 200)
         self.grid_x = math.ceil(screen_rev.width / self.grid_step)
         self.grid_y = math.ceil(screen_rev.height / self.grid_step)
-
+# ##########################################
         self.properties_delete_button = pygame_gui
-
+# ##########################################
+        # Pygame
         pygame.init()
         pygame.font.init()
         pygame.display.set_caption(caption)
@@ -47,6 +49,9 @@ class Game:
         self.ground = pygame.Surface(size=(screen_rev.width, screen_rev.height / 6))
         self.ground.fill((0, 200, 0))
         self.groundRect = self.ground.get_rect()
+        # Pygame_gui
+        self.manager = pygame_gui.UIManager((screen_rev.width, screen_rev.height), '../ext/theme.json')
+# ##########################################
 
 # ################################################
 
@@ -63,15 +68,18 @@ class Game:
 
 # ################################################
 
-        # pygame_gui buttons
+# ################################################
+        # Pygame_gui vars 
         self.propertiesWindowsCount = 0
         self.isPropertiesClose = False
+        self.is_start_button_selected = 0
+        self.isAirResistPressed = False
+        self.isGravityPressed = False
+        self.menuButtons()
+# ################################################
 
-        self.manager = pygame_gui.UIManager((screen_rev.width, screen_rev.height), '../ext/theme.json')
-        
-        self.button_size_x_menu = 70
-        self.button_size_y_menu = 35
 
+    def ScreenResolution(self):
         if 1024 >= screen_rev.width:
             print(f'IF 1000 > {screen_rev.width}')
             self.button_size_x_menu = 50
@@ -132,13 +140,6 @@ class Game:
             self.button_size_y_bottom_tool = 65
             self.button_pos_x_tools = 0
             self.button_pos_y_tools = screen_rev.height/5
-
-        self.menuButtons()
-        self.is_start_button_selected = 0
-        self.isAirResistPressed = False
-        self.isGravityPressed = False
-        # self.start_button.select()
-
     def menuButtons(self):
         #menu buttons
         self.reset_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((self.button_size_x_menu * 0, 0), (self.button_size_x_menu, self.button_size_y_menu)),
@@ -346,6 +347,7 @@ class Game:
                                                         manager=self.manager)
             print('settings_button pressed')
         if event.ui_element == self.reset_button:
+            self.objects = []
             print('reset_button pressed')
         if event.ui_element == self.help_button:
             self.help_window= pygame_gui.elements.UIWindow(pygame.Rect(self.button_size_x_menu * 2, self.button_size_y_menu + 10, 400 , 300),
