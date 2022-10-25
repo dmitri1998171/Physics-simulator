@@ -360,7 +360,6 @@ class Game:
         if event.ui_element == self.start_button:
             if(self.is_start_button_selected == 0):
                 self.start_button.select()
-
             self.is_start_button_selected += 1
 
             if(self.is_start_button_selected > 1):
