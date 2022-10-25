@@ -1,4 +1,4 @@
-import random, pygame, math
+import random, pygame, math, pygame_gui
 
 class GameObject:
     def __init__(self, screen, x, y):
@@ -43,6 +43,10 @@ class Circle(GameObject):
 
     def draw(self, screen):
         self.object = pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius)
+        if self.canDragging == False:
+            pygame.draw.circle(screen, (0,0,0), (self.x, self.y), 24)
+            pygame.draw.line(screen, (255,255,255), [self.x-10, self.y-10], [self.x+10, self.y+10], 3)
+            pygame.draw.line(screen, (255,255,255), [self.x+10, self.y-10], [self.x-10, self.y+10], 3)
 
 class Rectangle(GameObject):
     def __init__(self, screen, x, y):
@@ -53,6 +57,10 @@ class Rectangle(GameObject):
 
     def draw(self, screen):
         self.object = pygame.draw.rect(screen, self.color, (self.x, self.y, self.w, self.h))     
+        if self.canDragging == False:
+            pygame.draw.circle(screen, (0,0,0), (self.x + self.w / 2, self.y + self.h / 2), 24)
+            pygame.draw.line(screen, (255,255,255), [self.x + self.w / 2 -10, self.y + self.h / 2 -10], [self.x + self.h / 2 +10, self.y + self.h / 2 +10], 3)
+            pygame.draw.line(screen, (255,255,255), [self.x + self.w / 2 +10, self.y + self.h / 2 -10], [self.x + self.h / 2 -10, self.y + self.h / 2 +10], 3)
 
 class Gear(GameObject):
     def __init__(self, screen, x, y):
@@ -86,4 +94,7 @@ class Gear(GameObject):
             vertexes.append(vertex)
 
         self.object = pygame.draw.polygon(screen, self.color, vertexes)
-
+        if self.canDragging == False:
+            pygame.draw.circle(screen, (0,0,0), (self.x, self.y), 24)
+            pygame.draw.line(screen, (255,255,255), [self.x-10, self.y-10], [self.x+10, self.y+10], 3)
+            pygame.draw.line(screen, (255,255,255), [self.x+10, self.y-10], [self.x-10, self.y+10], 3)

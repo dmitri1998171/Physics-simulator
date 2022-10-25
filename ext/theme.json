@@ -6,7 +6,7 @@
             "normal_bg":"#D9D9D9",
             "hovered_bg":"#BDBDBD",
             "disabled_bg":"#25292e",
-            "selected_bg":"#193754",
+            "selected_bg":"#969696",
             "dark_bg":"#15191e",
             "normal_text":"#000000",
             "hovered_text":"#FFFFFF",
@@ -95,6 +95,10 @@
             "normal_image":
             {
                 "path": "../Media/Icons/play-circle.png" 
+            },
+            "selected_image":
+            {
+                "path": "../Media/Icons/pause-circle.png"
             }
         }    
     },
@@ -294,5 +298,15 @@
             "enable_close_button": "1",
             "enable_title_bar": "1"
         }
-    } 
+    },
+    "#object_nailed":
+    {
+        "images":
+        {
+            "normal_image":
+            {
+                "path": "../Media/Icons/x-pin.png" 
+            }
+        }
+    }
 }
