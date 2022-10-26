@@ -16,11 +16,10 @@ class GameObject:
         self.impulse = 0        # Импульс
         self.force = 0          # Сила
 
-        self.h = h
-        self.w = w
-
         self.x = x
         self.y = y
+        self.w = w
+        self.h = h
         self.rotation = 0
 
         self.body = world.CreateDynamicBody(position=(self.x, self.y))
@@ -82,10 +81,8 @@ class Rectangle(GameObject):
 
     def draw(self, pos, vert):
         if(vert != []):
-            self.x = float(pos[0])
-            self.y = float(pos[1])
-
-        self.object = pygame.draw.rect(self.screen, self.color, (self.x, self.y, self.w, self.h))  
+        # self.object = pygame.draw.rect(self.screen, self.color, (self.x, self.y, self.w, self.h))  
+            self.object = pygame.draw.polygon(self.screen, self.color, vert)
 
         if self.canDragging == False:
             pygame.draw.circle(self.screen, (0,0,0), (self.x + self.w / 2, self.y + self.h / 2), 24)

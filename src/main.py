@@ -1,4 +1,3 @@
-import gc
 import pygame, sys
 import pygame_gui
 import math
@@ -14,6 +13,7 @@ import gameObject
 
 TARGET_FPS = 60
 TIME_STEP = 1.0 / TARGET_FPS
+
 for screen_rev in get_monitors():
             print(screen_rev)
 
@@ -89,6 +89,7 @@ class Game:
         self.menuButtons()
 
 # ################################################
+
     def ScreenResolution(self):
         if 1024 >= screen_rev.width:
             self.button_size_x_menu = 50
@@ -508,7 +509,7 @@ class Game:
             self.selectedObject = self.objects[len(self.objects) - 1]
 
         if event.ui_element == self.create_rectangle_button:
-            self.objects.append(gameObject.Rectangle(self.screen, self.world, screen_rev.width / 2, screen_rev.height / 2, 100, 100))
+            self.objects.append(gameObject.Rectangle(self.screen, self.world, screen_rev.width / 2, screen_rev.height / 2, 50, 50))
             self.selectedObject = self.objects[len(self.objects) - 1]
 
         if event.ui_element == self.create_gear_button:
@@ -677,28 +678,18 @@ class Game:
     def run(self):
         self.clock = self.clock.tick(TARGET_FPS) / 1000
 
-        # self.radius = 50
-        # self.body = self.world.CreateDynamicBody(position=(300, 300))
-        # self.circle = self.body.CreateCircleFixture(radius=self.radius, density=1, friction=0.3)
-
         def my_draw_polygon(polygon, body, fixture):
             self.vertices = [(body.transform * v) for v in polygon.vertices]
             self.vertices = [(v[0], screen_rev.height - v[1]) for v in self.vertices]
-            # pygame.draw.polygon(self.screen, (255, 0, 0), vertices)
-        
-        polygonShape.draw = my_draw_polygon
 
         def my_draw_circle(circle, body, fixture):
             self.objPos = body.transform * circle.pos
             self.objPos = (self.objPos[0], screen_rev.height - self.objPos[1])
-            # pygame.draw.circle(self.screen, (255, 255, 255), [int(x) for x in position], int(circle.radius))
 
+        polygonShape.draw = my_draw_polygon
         circleShape.draw = my_draw_circle
 
         while not self.game_over:
-            # if(len(self.objects) > 0):
-            #     circleShape.draw = self.objects[0].my_draw_circle
-            
             self.handleEvents()
             self.update()
             self.draw()
