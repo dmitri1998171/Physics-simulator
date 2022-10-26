@@ -58,9 +58,9 @@ class Circle(GameObject):
             pygame.draw.circle(screen, (0,0,0), (self.x, self.y), 24)
             pygame.draw.line(screen, (255,255,255), [self.x-10, self.y-10], [self.x+10, self.y+10], 3)
             pygame.draw.line(screen, (255,255,255), [self.x+10, self.y-10], [self.x-10, self.y+10], 3)
-        if self.modifyState == ModifyStates.scale:
-            self.scaleing = pygame.draw.line(screen, (255,255,255), [self.x + self.radius - 13 ,self.y + self.radius - 3], [self.x + self.radius - 3 ,self.y + self.radius - 3], 3)
-            pygame.draw.line(screen, (255,255,255), [self.x + self.radius - 3, self.y + self.radius - 13], [self.x + self.radius - 3, self.y + self.radius - 3], 3)
+        # if self.modifyState == ModifyStates.scale:
+        #     self.scaleing = pygame.draw.line(screen, (255,255,255), [self.x + self.radius - 13 ,self.y + self.radius - 3], [self.x + self.radius - 3 ,self.y + self.radius - 3], 3)
+        #     pygame.draw.line(screen, (255,255,255), [self.x + self.radius - 3, self.y + self.radius - 13], [self.x + self.radius - 3, self.y + self.radius - 3], 3)
 
 class Rectangle(GameObject):
     def __init__(self, screen, x, y, w, h):
