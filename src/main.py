@@ -24,11 +24,13 @@ class Game:
         self.frame_rate = frame_rate
         self.game_over = False
         self.objects = []
-        self.selectedObject = gameObject.GameObject(0, 0, 0)
-        self.isDragging = False
+        self.modifyState = 0
+        self.selectedObject = gameObject.GameObject(0, 0, 0, 0, 0)
+        self.isDragging = False                             # Для работы клик+перетаскивание
         self.mouse_x = screen_rev.width / 2
         self.mouse_y = screen_rev.height / 2
-        self.cursorObjectDelta = [0, 0]
+        self.cursorObjectDelta = [0, 0, 0, 0]
+        self.selectedObject.scaleing = [0, 0]
 # ##########################################
         # Милиметровка
         self.IsGridShow = False
@@ -44,6 +46,7 @@ class Game:
         pygame.font.init()
         pygame.display.set_caption(caption)
         self.screen = pygame.display.set_mode((screen_rev.width, screen_rev.height), FULLSCREEN)
+        # self.screen = pygame.display.set_mode((1000, 1600))
         self.clock = pygame.time.Clock()
 
         self.ground = pygame.Surface(size=(screen_rev.width, screen_rev.height / 6))
@@ -72,6 +75,7 @@ class Game:
 # ################################################
         # Pygame_gui vars 
         self.lbl0 = pygame_gui
+        self.ScalingCount = 0
         self.propertiesWindowsCount = 0
         self.isPropertiesClose = False
         self.is_start_button_selected = 0
@@ -140,7 +144,9 @@ class Game:
             self.button_size_y_bottom_tool = 65
             self.button_pos_x_tools = 0
             self.button_pos_y_tools = screen_rev.height/5
+    
     def menuButtons(self):
+        
         #menu buttons
         self.reset_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((self.button_size_x_menu * 0, 0), (self.button_size_x_menu, self.button_size_y_menu)),
                                             text='',
@@ -259,7 +265,7 @@ class Game:
                                                 tool_tip_text = 'Object information edit',
                                                 object_id=f"#information_edit_button",
                                                 manager=self.manager)
-        
+                              
     def handleEvents(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT: 
@@ -273,13 +279,23 @@ class Game:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 for i in range(len(self.objects)):            
                     if self.objects[i].isIntersect(event):
+                        # print(f"\n\t click!!! \n")
                         if event.button == 1:
                             self.selectedObject = self.objects[i]
                             self.isDragging = True
                             if(self.selectedObject.canDragging and self.isDragging):
                                 self.mouse_x, self.mouse_y = event.pos
                                 self.cursorObjectDelta[0] = self.selectedObject.x - self.mouse_x
-                                self.cursorObjectDelta[1] = self.selectedObject.y - self.mouse_y   
+                                self.cursorObjectDelta[1] = self.selectedObject.y - self.mouse_y
+
+                                if abs(self.cursorObjectDelta[0]) > self.selectedObject.w - 20 and abs(self.cursorObjectDelta[1]) > self.selectedObject.h - 20 and self.selectedObject.IsScaleing == True:
+                                    self.cursorObjectDelta[2] = self.selectedObject.h + self.mouse_x
+                                    self.cursorObjectDelta[3] = self.selectedObject.w + self.mouse_y
+                                    print('debug: y', self.selectedObject.y, self.mouse_y, self.cursorObjectDelta[0])
+                                    print('debug: x', self.selectedObject.x, self.mouse_x, self.cursorObjectDelta[1])
+                                    print('debug: h', self.selectedObject.h, self.cursorObjectDelta[2])
+                                    print('debug: w', self.selectedObject.w, self.cursorObjectDelta[3])
+                        
                         # MENU RBM
                         if event.button == 3:
                             self.propertiesWindowsCount = self.propertiesWindowsCount + 1
@@ -299,10 +315,26 @@ class Game:
                             self.properties.kill()
                             self.isPropertiesClose = False
             
-            if event.type == pygame.MOUSEBUTTONUP:
-                if event.button == 1:            
+            if event.type == pygame.MOUSEMOTION:
+                if event.buttons == 1: 
+                    print('oleg1')
                     self.isDragging = False
-                    
+                    self.ScalingCount = 0           
+                    if self.selectedObject.IsScaleing == True:
+                        print('debug oleg2')
+                        if abs(self.cursorObjectDelta[0]) > 50 and abs(self.cursorObjectDelta[1]) > 50 and self.selectedObject.IsScaleing == True:
+                            print('debug oleg3')
+                            self.Mouse_obj_x = self.selectedObject.x - self.mouse_x - self.cursorObjectDelta[0] + self.selectedObject.x 
+                            self.Mouse_obj_y = self.selectedObject.y - self.mouse_y - self.cursorObjectDelta[1] + self.selectedObject.y
+                            print('abobium 1')
+                            print(self.selectedObject.y, self.mouse_y, self.cursorObjectDelta[1], self.selectedObject.y)
+                            #print(self.Mouse_obj_x, self.Mouse_obj_y)
+
+            if event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 1:
+                    self.isDragging = False
+                    self.ScalingCount = 0 
+
             if event.type == pygame.MOUSEMOTION:
                 if(self.selectedObject.canDragging and self.isDragging):
                     self.mouse_x, self.mouse_y = event.pos
@@ -310,10 +342,34 @@ class Game:
                     self.selectedObject.y = self.mouse_y + self.cursorObjectDelta[1]
                     self.infoMenuLabelKill()
                     self.infoMenuLabel()
+                if(self.modifyState == gameObject.ModifyStates.scale):
+                   pass
+                if(self.modifyState == gameObject.ModifyStates.move):
+                    # print(f"\n\t modifyState = {self.selectedObject.modifyState} \n")
+                    if(self.selectedObject.canDragging and self.isDragging):
+                        self.mouse_x, self.mouse_y = event.pos
+                        self.selectedObject.x = self.mouse_x + self.cursorObjectDelta[0]
+                        self.selectedObject.y = self.mouse_y + self.cursorObjectDelta[1]
+                # if(self.selectedObject.IsScaleing == True and self.selectedObject):
+                    # self.mouse_x, self.mouse_y = event.pos
+                    # if abs(self.cursorObjectDelta[0]) > self.selectedObject.w /2 and abs(self.cursorObjectDelta[1]) > self.selectedObject.h /2 and self.selectedObject.IsScaleing == True: 
+                    #     print('Scaling...')
+                    #     print(f'\nMOUSE POS: {self.mouse_x, self.mouse_y}\t OBJ POS: {self.selectedObject.x, self.selectedObject.y}\t OBJ POINT:{self.cursorObjectDelta[0],self.cursorObjectDelta[1]}\n')
+                        #self.selectedObject.w = self.selectedObject.w + self.mouse_x
+                        #self.selectedObject.h = self.selectedObject.h + self.mouse_y
+                        #self.selectedObject.w = self.selectedObject.w + self.obj_pos_x - self.mouse_x
+                        #self.selectedObject.h = self.selectedObject.h + self.obj_pos_y - self.mouse_y
+                        # if self.selectedObject.IsScaleing == True and self.selectedObject.w > self.selectedObject.w /2 and self.selectedObject.h > self.selectedObject.h /2:
+                        #     self.obj_scale_w = self.obj_pos_x - self.mouse_x
+                        #     self.obj_scale_h = self.obj_pos_y - self.mouse_y
+                        #     print(f'+++\t{self.obj_scale_w} X {self.obj_scale_h}')
+                        #     self.selectedObject.w = self.selectedObject.w + self.obj_scale_w * -1
+                        #     self.selectedObject.h = self.selectedObject.h + self.obj_scale_h * -1
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
                 self.UIHandleEvents(event)
             
             self.manager.process_events(event)
+    
     def RBMMenu(self):
         self.properties = pygame_gui.elements.UIWindow(pygame.Rect(self.selectedObject.x,self.selectedObject.y ,self.properties_size_x_button ,self.properties_size_y_button * 3),
                                                         window_display_title = 'Properties',
@@ -481,7 +537,7 @@ class Game:
             self.objects.append(gameObject.Circle(self.screen, screen_rev.width / 2, screen_rev.height / 2))
             print('create_circle_button pressed')
         if event.ui_element == self.create_rectangle_button:
-            self.objects.append(gameObject.Rectangle(self.screen, screen_rev.width / 2, screen_rev.height / 2))
+            self.objects.append(gameObject.Rectangle(self.screen, screen_rev.width / 2, screen_rev.height / 2, 100, 100))
             polygonShape.draw = self.objects[len(self.objects) - 1].draw(self.screen)
             print('create_rectangle_button pressed')
         if event.ui_element == self.create_gear_button:
@@ -499,10 +555,34 @@ class Game:
             print('toolbar_move_with_inert_button pressed')
         if event.ui_element == self.toolbar_move_without_inert_button:
             print('toolbar_move_without_inert_button pressed')
+
+            if(self.modifyState != gameObject.ModifyStates.move):
+                self.modifyState = gameObject.ModifyStates.move
+                self.toolbar_move_without_inert_button.select()
+            else:
+                self.modifyState = 0
+                self.toolbar_move_without_inert_button.unselect()
+
         if event.ui_element == self.toolbar_rotate_button:
             print('toolbar_rotate_button pressed')
+
+            if(self.modifyState != gameObject.ModifyStates.rotate):
+                self.modifyState = gameObject.ModifyStates.rotate
+                self.toolbar_rotate_button.select()
+            else:
+                self.modifyState = 0
+                self.toolbar_rotate_button.unselect()
+
         if event.ui_element == self.toolbar_size_button:
             print('toolbar_size_button pressed')
+
+            if(self.modifyState != gameObject.ModifyStates.scale):
+                self.modifyState = gameObject.ModifyStates.scale
+                self.toolbar_size_button.select()
+            else:
+                self.modifyState = 0
+                self.toolbar_size_button.unselect()
+
         # scale buttons
         if event.ui_element == self.scale_plus_button:
             print('scale_plus_button pressed')
