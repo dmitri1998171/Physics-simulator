@@ -1,13 +1,12 @@
-import random, pygame, math
-import Box2D 
-from Box2D.b2 import (world, polygonShape, circleShape, staticBody, dynamicBody)
-from screeninfo import get_monitors # Получение разрешение экрана @eto-ban
+import random, pygame, math, enum
 
-for screen_rev in get_monitors():
-    print(screen_rev)
+class ModifyStates(enum.Enum):
+    move = 1
+    rotate = 2
+    scale = 3
 
 class GameObject:
-    def __init__(self, screen, world, x, y):
+    def __init__(self, screen, world, x, y, w, h):
         self.speed = 0          # Скорость
         self.density = 0        # Плотность
         self.mass = 0           # Масса
@@ -17,15 +16,22 @@ class GameObject:
         self.impulse = 0        # Импульс
         self.force = 0          # Сила
 
+        self.h = h
+        self.w = w
+
         self.x = x
         self.y = y
-        self.rotation = []
+        self.rotation = 0
 
+        self.body = world.CreateDynamicBody(position=(self.x, self.y))
+
+        self.screen = screen
         self.object = pygame.rect
+        self.scaleing = pygame.rect
         self.canDragging = True # Для работы фиксатора
         self.color = (random.randint(0, 256), random.randint(0, 256), random.randint(0, 256))
 
-    def draw(self, screen, screen_rev):
+    def draw(self):
         pass
 
     def move(self, dx, dy): 
@@ -43,51 +49,49 @@ class GameObject:
     
 class Circle(GameObject):
     def __init__(self, screen, world, x, y):
-        super().__init__(screen, world, x, y)
+        super().__init__(screen, world, x, y, 0, 0)
 
-        self.world = world
         self.radius = 50
-        self.body = world.CreateDynamicBody(position=(self.x, self.y))
         self.circle = self.body.CreateCircleFixture(radius=self.radius, density=1, friction=0.3)
 
-    def my_draw_circle(self, circle, body, screen):
-            position = body.transform * self.world.bodies[0].position
-            position = (position[0], screen_rev.height - position[1])
-            pygame.draw.circle(self.screen, (255, 255, 255), (position[0], position[1]), int(circle.radius))
+    def draw(self, pos, vert):
+        if(pos != []):
+            self.x = float(pos[0])
+            self.y = float(pos[1])
 
+        self.object = pygame.draw.circle(self.screen, self.color, (self.x, self.y), self.radius)
 
-    def draw(self, screen, screen_rev):
-        # circleShape.draw = self.my_draw_circle(self.circle, self.body, screen)
-        # position = self.body.transform * self.body.position
-        # position = (position[0], screen_rev.height - position[1])
-        # pygame.draw.circle(screen, (255, 255, 255), (position[0], position[1]), int(self.radius))
-
-        # for body in self.world.bodies:
-        #     for fixture in self.body.fixtures:
-        #         fixture.shape.draw(self.body, fixture)
-        # self.body.fixtures[0].shape.draw(self.body, self.body.fixtures[0])
+        if self.canDragging == False:
+            pygame.draw.circle(self.screen, (0,0,0), (self.x, self.y), 24)
+            pygame.draw.line(self.screen, (255,255,255), [self.x-10, self.y-10], [self.x+10, self.y+10], 3)
+            pygame.draw.line(self.screen, (255,255,255), [self.x+10, self.y-10], [self.x-10, self.y+10], 3)
+        
+        # if self.modifyState == ModifyStates.scale:
+        #     self.scaleing = pygame.draw.line(screen, (255,255,255), [self.x + self.radius - 13 ,self.y + self.radius - 3], [self.x + self.radius - 3 ,self.y + self.radius - 3], 3)
+        #     pygame.draw.line(screen, (255,255,255), [self.x + self.radius - 3, self.y + self.radius - 13], [self.x + self.radius - 3, self.y + self.radius - 3], 3)
 
         for fixture in self.body.fixtures:
-                fixture.shape.draw(self.body, fixture)
+            fixture.shape.draw(self.body, fixture)
 
 class Rectangle(GameObject):
-    def __init__(self, screen, world, x, y):
-        super().__init__(screen, world, x, y)
+    def __init__(self, screen, world, x, y, w, h):
+        super().__init__(screen, world, x, y, w, h)
 
-        self.w = 100
-        self.h = 100
-        self.world = world
-        self.body = world.CreateDynamicBody(position=(300, 300))
-        self.box = self.body.CreatePolygonFixture(box=(50, 50), density=1, friction=0.3)
+        self.box = self.body.CreatePolygonFixture(box=(self.w, self.h), density=1, friction=0.3)
 
-    def draw(self, screen, screen_rev):
-        # self.object = pygame.draw.rect(screen, self.color, (self.x, self.y, self.w, self.h))     
+    def draw(self, pos, vert):
+        if(vert != []):
+            self.x = float(pos[0])
+            self.y = float(pos[1])
+
+        self.object = pygame.draw.rect(self.screen, self.color, (self.x, self.y, self.w, self.h))  
+
         for fixture in self.body.fixtures:
             fixture.shape.draw(self.body, fixture)
 
 class Gear(GameObject):
-    def __init__(self, screen, world, x, y):
-        super().__init__(screen, world, x, y)
+    def __init__(self, screen, x, y):
+        super().__init__(screen, x, y, 0, 0)
 
     def draw(self, screen, screen_rev):
         inner_radius = 0
@@ -117,4 +121,10 @@ class Gear(GameObject):
             vertexes.append(vertex)
 
         self.object = pygame.draw.polygon(screen, self.color, vertexes)
-
+        if self.canDragging == False:
+            pygame.draw.circle(screen, (0,0,0), (self.x, self.y), 24)
+            pygame.draw.line(screen, (255,255,255), [self.x-10, self.y-10], [self.x+10, self.y+10], 3)
+            pygame.draw.line(screen, (255,255,255), [self.x+10, self.y-10], [self.x-10, self.y+10], 3)
+        if self.IsScaleing == True:
+            self.scaleing = pygame.draw.line(screen, (255,255,255), [self.x + outer_radius - 13 ,self.y + outer_radius - 3], [self.x + outer_radius - 3 ,self.y + outer_radius - 3], 3)
+            pygame.draw.line(screen, (255,255,255), [self.x + outer_radius - 3, self.y + outer_radius - 13], [self.x + outer_radius - 3, self.y + outer_radius - 3], 3)
