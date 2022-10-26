@@ -1,8 +1,10 @@
 import random, pygame, math
 import Box2D 
 from Box2D.b2 import (world, polygonShape, circleShape, staticBody, dynamicBody)
+from screeninfo import get_monitors # Получение разрешение экрана @eto-ban
 
-PPM = 100.0  # pixels per meter
+for screen_rev in get_monitors():
+    print(screen_rev)
 
 class GameObject:
     def __init__(self, screen, world, x, y):
@@ -43,16 +45,30 @@ class Circle(GameObject):
     def __init__(self, screen, world, x, y):
         super().__init__(screen, world, x, y)
 
+        self.world = world
         self.radius = 50
         self.body = world.CreateDynamicBody(position=(self.x, self.y))
         self.circle = self.body.CreateCircleFixture(radius=self.radius, density=1, friction=0.3)
 
+    def my_draw_circle(self, circle, body, screen):
+            position = body.transform * self.world.bodies[0].position
+            position = (position[0], screen_rev.height - position[1])
+            pygame.draw.circle(self.screen, (255, 255, 255), (position[0], position[1]), int(circle.radius))
+
+
     def draw(self, screen, screen_rev):
-        position = self.body.transform * self.circle.pos * PPM
-        position = (position[0], screen_rev.height - position[1])
-        
-        self.object = pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius)
-        self.body.fixture.shape.draw(self.body, self.body.fixture)
+        # circleShape.draw = self.my_draw_circle(self.circle, self.body, screen)
+        # position = self.body.transform * self.body.position
+        # position = (position[0], screen_rev.height - position[1])
+        # pygame.draw.circle(screen, (255, 255, 255), (position[0], position[1]), int(self.radius))
+
+        # for body in self.world.bodies:
+        #     for fixture in self.body.fixtures:
+        #         fixture.shape.draw(self.body, fixture)
+        # self.body.fixtures[0].shape.draw(self.body, self.body.fixtures[0])
+
+        for fixture in self.body.fixtures:
+                fixture.shape.draw(self.body, fixture)
 
 class Rectangle(GameObject):
     def __init__(self, screen, world, x, y):
@@ -60,9 +76,14 @@ class Rectangle(GameObject):
 
         self.w = 100
         self.h = 100
+        self.world = world
+        self.body = world.CreateDynamicBody(position=(300, 300))
+        self.box = self.body.CreatePolygonFixture(box=(50, 50), density=1, friction=0.3)
 
     def draw(self, screen, screen_rev):
-        self.object = pygame.draw.rect(screen, self.color, (self.x, self.y, self.w, self.h))     
+        # self.object = pygame.draw.rect(screen, self.color, (self.x, self.y, self.w, self.h))     
+        for fixture in self.body.fixtures:
+            fixture.shape.draw(self.body, fixture)
 
 class Gear(GameObject):
     def __init__(self, screen, world, x, y):

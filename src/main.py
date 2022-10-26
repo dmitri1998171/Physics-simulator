@@ -55,9 +55,7 @@ class Game:
             shapes=polygonShape(box=(screen_rev.width, screen_rev.height / 6)),
         )
         
-        self.body = self.world.CreateDynamicBody(position=(screen_rev.width / 2, screen_rev.height / 2))
-        self.circle = self.body.CreateCircleFixture(radius=5, density=1, friction=0.3)
-
+        
 
         self.selectedObject = gameObject.GameObject(0, self.world, 0, 0)
 
@@ -498,33 +496,34 @@ class Game:
     def run(self):
         self.clock = self.clock.tick(TARGET_FPS) / 1000
 
+        # self.radius = 50
+        # self.body = self.world.CreateDynamicBody(position=(300, 300))
+        # self.circle = self.body.CreateCircleFixture(radius=self.radius, density=1, friction=0.3)
+
+        def my_draw_polygon(polygon, body, fixture):
+            vertices = [(body.transform * v) for v in polygon.vertices]
+            vertices = [(v[0], screen_rev.height - v[1]) for v in vertices]
+            pygame.draw.polygon(self.screen, (255, 0, 0), vertices)
+        
+        polygonShape.draw = my_draw_polygon
+
         def my_draw_circle(circle, body, fixture):
             position = body.transform * circle.pos
             position = (position[0], screen_rev.height - position[1])
-            pygame.draw.circle(self.screen, (255, 255, 255), [int(
-                x) for x in position], int(circle.radius))
+            pygame.draw.circle(self.screen, (255, 255, 255), [int(x) for x in position], int(circle.radius))
 
         circleShape.draw = my_draw_circle
 
         while not self.game_over:
             # if(len(self.objects) > 0):
-            #     circleShape.draw = self.objects[0].draw(self.screen, screen_rev)
+            #     circleShape.draw = self.objects[0].my_draw_circle
             
             self.handleEvents()
             self.update()
             self.draw()
 
-# ################################################
-
-            # Draw the world
-            # for body in self.world.bodies:
-            for fixture in self.body.fixtures:
-                fixture.shape.draw(self.body, fixture)
-
             # Make Box2D simulate the physics of our world for one step.
             self.world.Step(TIME_STEP, 10, 10)
-
-# ################################################
 
             self.manager.update(self.clock)
             pygame.display.update()
