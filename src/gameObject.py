@@ -28,6 +28,7 @@ class GameObject:
         self.screen = screen
         self.object = pygame.rect
         self.scaleing = pygame.rect
+        self.IsScaleing = False
         self.canDragging = True # Для работы фиксатора
         self.color = (random.randint(0, 256), random.randint(0, 256), random.randint(0, 256))
 
@@ -85,6 +86,11 @@ class Rectangle(GameObject):
             self.y = float(pos[1])
 
         self.object = pygame.draw.rect(self.screen, self.color, (self.x, self.y, self.w, self.h))  
+
+        if self.canDragging == False:
+            pygame.draw.circle(self.screen, (0,0,0), (self.x + self.w / 2, self.y + self.h / 2), 24)
+            pygame.draw.line(self.screen, (255,255,255), [self.x + self.w / 2 -10, self.y + self.h / 2 -10], [self.x + self.h / 2 +10, self.y + self.h / 2 +10], 3)
+            pygame.draw.line(self.screen, (255,255,255), [self.x + self.w / 2 +10, self.y + self.h / 2 -10], [self.x + self.h / 2 -10, self.y + self.h / 2 +10], 3)
 
         for fixture in self.body.fixtures:
             fixture.shape.draw(self.body, fixture)
