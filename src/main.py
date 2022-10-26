@@ -11,9 +11,9 @@ from Box2D.b2 import (world, polygonShape, circleShape, staticBody, dynamicBody)
 
 import gameObject
 
-PPM = 20.0  # pixels per meter
 TARGET_FPS = 60
 TIME_STEP = 1.0 / TARGET_FPS
+
 for screen_rev in get_monitors():
             print(screen_rev)
 
@@ -21,16 +21,17 @@ class Game:
     def __init__(self, caption, width, height, frame_rate):
         self.ScreenResolution() # Расчет размера кнопок
 
+        self.objPos = []
+        self.vertices = []
+
         self.frame_rate = frame_rate
         self.game_over = False
         self.objects = []
         self.modifyState = 0
-        self.selectedObject = gameObject.GameObject(0, 0, 0, 0, 0)
         self.isDragging = False                             # Для работы клик+перетаскивание
         self.mouse_x = screen_rev.width / 2
         self.mouse_y = screen_rev.height / 2
         self.cursorObjectDelta = [0, 0, 0, 0]
-        self.selectedObject.scaleing = [0, 0]
 # ##########################################
         # Милиметровка
         self.IsGridShow = False
@@ -51,6 +52,8 @@ class Game:
         # self.screen = pygame.display.set_mode((1000, 1600))
         self.clock = pygame.time.Clock()
 
+        self.world = world(gravity=(0, -10), doSleep=True)
+
         self.ground = pygame.Surface(size=(screen_rev.width, screen_rev.height / 6))
         self.ground.fill((0, 200, 0))
         self.groundRect = self.ground.get_rect()
@@ -65,14 +68,12 @@ class Game:
 
         # And a static body to hold the ground shape
         self.ground_body = self.world.CreateStaticBody(
-            position=(0, 0),
-            shapes=polygonShape(box=(50, 1)),
+            position=(0, screen_rev.height - (screen_rev.height / 6)),
+            shapes=polygonShape(box=(screen_rev.width, screen_rev.height / 6)),
         )
 
-        # Create a couple dynamic bodies
-        self.body = self.world.CreateDynamicBody(position=(20, 45))
-
-# ################################################
+        self.selectedObject = gameObject.GameObject(0, self.world, 0, 0, 0, 0)
+        self.selectedObject.scaleing = [0, 0]
 
 # ################################################
         # Pygame_gui vars 
@@ -90,6 +91,7 @@ class Game:
         self.menuButtons()
 
 # ################################################
+
     def ScreenResolution(self):
         if 1024 >= screen_rev.width:
             self.button_size_x_menu = 50
@@ -538,15 +540,15 @@ class Game:
 
         # Crete/delete buttons
         if event.ui_element == self.create_circle_button:
-            self.objects.append(gameObject.Circle(self.screen, screen_rev.width / 2, screen_rev.height / 2))
+            self.objects.append(gameObject.Circle(self.screen, self.world, screen_rev.width / 2, screen_rev.height / 2))
             self.selectedObject = self.objects[len(self.objects) - 1]
 
         if event.ui_element == self.create_rectangle_button:
-            self.objects.append(gameObject.Rectangle(self.screen, screen_rev.width / 2, screen_rev.height / 2, 100, 100))
+            self.objects.append(gameObject.Rectangle(self.screen, self.world, screen_rev.width / 2, screen_rev.height / 2, 50, 50))
             self.selectedObject = self.objects[len(self.objects) - 1]
 
         if event.ui_element == self.create_gear_button:
-            self.objects.append(gameObject.Gear(self.screen, screen_rev.width / 2, screen_rev.height / 2))
+            self.objects.append(gameObject.Gear(self.screen, self.world, screen_rev.width / 2, screen_rev.height / 2))
             self.selectedObject = self.objects[len(self.objects) - 1]
 
         if event.ui_element == self.create_nail_button:
@@ -704,9 +706,9 @@ class Game:
 
         create_rect(self.screen, self.button_size_x_menu * 6.5, self.button_size_y_menu, 2, (66, 204, 210), (0, 0, 0))
         createGrid()
-        
+
         for o in self.objects:
-            o.draw(self.screen)
+            o.draw(self.objPos, self.vertices)
         
         self.manager.draw_ui(self.screen)
 
@@ -714,29 +716,27 @@ class Game:
         self.clock = self.clock.tick(TARGET_FPS) / 1000
 
         def my_draw_polygon(polygon, body, fixture):
-            vertices = [(body.transform * v) * PPM for v in polygon.vertices]
-            vertices = [(v[0], screen_rev.height - v[1]) for v in vertices]
-            pygame.draw.polygon(self.screen, (255, 255, 255), vertices)
+            self.vertices = [(body.transform * v) for v in polygon.vertices]
+            self.vertices = [(v[0], screen_rev.height - v[1]) for v in self.vertices]
+
+        def my_draw_circle(circle, body, fixture):
+            self.objPos = body.transform * circle.pos
+            self.objPos = (self.objPos[0], screen_rev.height - self.objPos[1])
+
         polygonShape.draw = my_draw_polygon
+        circleShape.draw = my_draw_circle
 
         while not self.game_over:
             self.handleEvents()
             self.update()
             self.draw()
 
-# ################################################
-
-            for body in self.world.bodies:
-                for fixture in self.body.fixtures:
-                    fixture.shape.draw(self.body, fixture)
-
             # Make Box2D simulate the physics of our world for one step.
             self.world.Step(TIME_STEP, 10, 10)
 
-# ################################################
-
             self.manager.update(self.clock)
             pygame.display.update()
+            
         self.clock.tick(self.frame_rate)
         
 
