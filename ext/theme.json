@@ -292,7 +292,7 @@
         {
             "shape": "rounded_rectangle",
             "shape_corner_radius": "1",
-            "border_width": "100",
+            "border_width": "6",
             "shadow_width": "0",
             "title_bar_height": "20",
             "enable_close_button": "1",
@@ -306,6 +306,17 @@
             "normal_image":
             {
                 "path": "../Media/Icons/x-pin.png" 
+            }
+        }
+    },
+    "#information_label_info":
+    {
+        "label":
+        {
+            "misc":
+            {
+                "text_horiz_alignment": "left",
+                "text_vert_alignment": "bottom"
             }
         }
     }

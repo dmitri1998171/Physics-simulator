@@ -13,7 +13,7 @@ class GameObject:
 
         self.x = x
         self.y = y
-        self.rotation = []
+        self.rotation = 0
 
         self.object = pygame.rect
         self.canDragging = True # Для работы фиксатора
