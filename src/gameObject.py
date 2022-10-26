@@ -1,11 +1,9 @@
-import random, pygame, math, pygame_gui
-import enum
+import random, pygame, math, enum
 
 class ModifyStates(enum.Enum):
     move = 1
     rotate = 2
     scale = 3
-
 
 class GameObject:
     def __init__(self, screen, x, y, w, h):
@@ -66,11 +64,8 @@ class Rectangle(GameObject):
     def __init__(self, screen, x, y, w, h):
         super().__init__(screen, x, y, w, h)
 
-
     def draw(self, screen):
         self.object = pygame.draw.rect(screen, self.color, (self.x, self.y, self.w, self.h))  
-
-
 
 class Gear(GameObject):
     def __init__(self, screen, x, y):
