@@ -24,8 +24,8 @@ class GameObject:
         self.rotation = 0
 
         self.object = pygame.rect
-        self.scaleing = pygame.rect
         self.IsScaleing = False
+        self.IsScaleingPressed = False
         self.canDragging = True # Для работы фиксатора
         self.color = (random.randint(0, 256), random.randint(0, 256), random.randint(0, 256))
 
@@ -57,9 +57,13 @@ class Circle(GameObject):
             pygame.draw.circle(screen, (0,0,0), (self.x, self.y), 24)
             pygame.draw.line(screen, (255,255,255), [self.x-10, self.y-10], [self.x+10, self.y+10], 3)
             pygame.draw.line(screen, (255,255,255), [self.x+10, self.y-10], [self.x-10, self.y+10], 3)
-        # if self.modifyState == ModifyStates.scale:
-        #     self.scaleing = pygame.draw.line(screen, (255,255,255), [self.x + self.radius - 13 ,self.y + self.radius - 3], [self.x + self.radius - 3 ,self.y + self.radius - 3], 3)
-        #     pygame.draw.line(screen, (255,255,255), [self.x + self.radius - 3, self.y + self.radius - 13], [self.x + self.radius - 3, self.y + self.radius - 3], 3)
+        if self.IsScaleing:
+            if self.IsScaleingPressed:
+                pygame.draw.line(screen, (255,255,255), [self.x + self.radius - 23 ,self.y + self.radius - 5], [self.x + self.radius - 5 ,self.y + self.radius - 5], 5)
+                pygame.draw.line(screen, (255,255,255), [self.x + self.radius - 5, self.y + self.radius - 23], [self.x + self.radius - 5, self.y + self.radius - 5], 5)
+            else:
+                pygame.draw.line(screen, (255,255,255), [self.x + self.radius - 13 ,self.y + self.radius - 3], [self.x + self.radius - 3 ,self.y + self.radius - 3], 3)
+                pygame.draw.line(screen, (255,255,255), [self.x + self.radius - 3, self.y + self.radius - 13], [self.x + self.radius - 3, self.y + self.radius - 3], 3)
 
 class Rectangle(GameObject):
     def __init__(self, screen, x, y, w, h):
@@ -71,6 +75,14 @@ class Rectangle(GameObject):
             pygame.draw.circle(screen, (0,0,0), (self.x + self.w / 2, self.y + self.h / 2), 24)
             pygame.draw.line(screen, (255,255,255), [self.x + self.w / 2 -10, self.y + self.h / 2 -10], [self.x + self.h / 2 +10, self.y + self.h / 2 +10], 3)
             pygame.draw.line(screen, (255,255,255), [self.x + self.w / 2 +10, self.y + self.h / 2 -10], [self.x + self.h / 2 -10, self.y + self.h / 2 +10], 3)
+            #self.scaleing = pygame.draw.line(screen, (255,255,255), [self.x + self.radius - 13 ,self.y + self.radius - 3], [self.x + self.radius - 3 ,self.y + self.radius - 3], 3)
+        if self.IsScaleing:
+            if self.IsScaleingPressed:
+                pygame.draw.line(screen, (255,255,255), [self.x + self.w - 5, self.y + self.h - 23], [self.x + self.w - 5, self.y + self.h - 5], 5)
+                pygame.draw.line(screen, (255,255,255), [self.x + self.w - 23 ,self.y + self.h - 5], [self.x + self.w - 5 ,self.y + self.h - 5], 5)
+            else:
+                pygame.draw.line(screen, (255,255,255), [self.x + self.w - 3, self.y + self.h - 13], [self.x + self.w - 3, self.y + self.h - 3], 3)
+                pygame.draw.line(screen, (255,255,255), [self.x + self.w - 13 ,self.y + self.h - 3], [self.x + self.w - 3 ,self.y + self.h - 3], 3)
 
 class Gear(GameObject):
     def __init__(self, screen, x, y):
