@@ -25,6 +25,7 @@ class GameObject:
 
         self.object = pygame.rect
         self.scaleing = pygame.rect
+        self.IsScaleing = False
         self.canDragging = True # Для работы фиксатора
         self.color = (random.randint(0, 256), random.randint(0, 256), random.randint(0, 256))
 
@@ -65,7 +66,11 @@ class Rectangle(GameObject):
         super().__init__(screen, x, y, w, h)
 
     def draw(self, screen):
-        self.object = pygame.draw.rect(screen, self.color, (self.x, self.y, self.w, self.h))  
+        self.object = pygame.draw.rect(screen, self.color, (self.x, self.y, self.w, self.h))
+        if self.canDragging == False:
+            pygame.draw.circle(screen, (0,0,0), (self.x + self.w / 2, self.y + self.h / 2), 24)
+            pygame.draw.line(screen, (255,255,255), [self.x + self.w / 2 -10, self.y + self.h / 2 -10], [self.x + self.h / 2 +10, self.y + self.h / 2 +10], 3)
+            pygame.draw.line(screen, (255,255,255), [self.x + self.w / 2 +10, self.y + self.h / 2 -10], [self.x + self.h / 2 -10, self.y + self.h / 2 +10], 3)
 
 class Gear(GameObject):
     def __init__(self, screen, x, y):

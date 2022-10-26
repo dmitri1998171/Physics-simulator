@@ -280,7 +280,7 @@
           "enable_title_bar": "0"
        }
     },
-    "#information_edit_window":
+    "#information_window":
     {
         "colours":
         {
@@ -290,6 +290,25 @@
     
         "misc":
         {
+            "shape": "rounded_rectangle",
+            "shape_corner_radius": "1",
+            "border_width": "6",
+            "shadow_width": "0",
+            "title_bar_height": "20",
+            "enable_close_button": "0",
+            "enable_title_bar": "1"
+        }
+    },
+    "#information_edit_window":
+    {
+        "colours":
+        {
+            "dark_bg":"#D9D9D9",
+            "normal_border": "#D9D9D9"
+        },
+    
+        "misc":
+        {   
             "shape": "rounded_rectangle",
             "shape_corner_radius": "1",
             "border_width": "6",

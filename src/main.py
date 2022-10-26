@@ -362,7 +362,7 @@ class Game:
         self.information_object_window = pygame_gui.elements.UIWindow(pygame.Rect(screen_rev.width - self.properties_size_x_button - 200,self.properties_size_y_button * 1 ,250 ,300),
                                                         window_display_title = 'information object',
                                                         visible=True,
-                                                        object_id=f"#information_edit_window",
+                                                        object_id=f"#information_window",
                                                         manager=self.manager)
         self.lbl0 = pygame_gui.elements.UILabel(pygame.Rect((0,0), (-1,-1)),
                                                 text = f"Position: {self.selectedObject.x} {self.selectedObject.y}",
@@ -377,7 +377,7 @@ class Game:
                                                 #object_id=f"#information_label_info",
                                                 manager = self.manager)
         self.lbl2 = pygame_gui.elements.UILabel(pygame.Rect((0,30), (-1,-1)),
-                                                text = "____________",
+                                                text = "==============================",
                                                 container = self.information_object_window,
                                                 parent_element = self.information_object_window,
                                                 #object_id=f"#information_label_info",
@@ -437,7 +437,13 @@ class Game:
                                                 #object_id=f"#information_label_info",
                                                 manager = self.manager)
         self.lbl12 = pygame_gui.elements.UILabel(pygame.Rect((0,180), (-1,-1)),
-                                                text = f"Nailed: {self.selectedObject.canDragging}",
+                                                text = f"Not nailed: {self.selectedObject.canDragging}",
+                                                container = self.information_object_window,
+                                                parent_element = self.information_object_window,
+                                                #object_id=f"#information_label_info",
+                                                manager = self.manager)
+        self.lbl13 = pygame_gui.elements.UILabel(pygame.Rect((0,195), (-1,-1)),
+                                                text = f"Is scaling: {self.selectedObject.IsScaleing}",
                                                 container = self.information_object_window,
                                                 parent_element = self.information_object_window,
                                                 #object_id=f"#information_label_info",
@@ -457,6 +463,7 @@ class Game:
         self.lbl10.kill()
         self.lbl11.kill()
         self.lbl12.kill()
+        self.lbl13.kill()
         self.information_object_window.kill()
         
     def UIHandleEvents(self, event):
