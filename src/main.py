@@ -54,11 +54,12 @@ class Game:
         self.groundRect = self.ground.get_rect()
         # Pygame_gui
         self.manager = pygame_gui.UIManager((screen_rev.width, screen_rev.height), '../ext/theme.json')
+        self.gravity = -10
 # ##########################################
 
 # ################################################
 
-        self.world = Box2D.b2.world(gravity=(0, -10), doSleep=True)
+        self.world = Box2D.b2.world(gravity=(0, self.gravity), doSleep=True)
 
         # And a static body to hold the ground shape
         self.ground_body = self.world.CreateStaticBody(
@@ -73,6 +74,7 @@ class Game:
 
 # ################################################
         # Pygame_gui vars 
+        self.lbl0 = pygame_gui
         self.ScalingCount = 0
         self.propertiesWindowsCount = 0
         self.isPropertiesClose = False
@@ -334,6 +336,12 @@ class Game:
                     self.ScalingCount = 0 
 
             if event.type == pygame.MOUSEMOTION:
+                if(self.selectedObject.canDragging and self.isDragging):
+                    self.mouse_x, self.mouse_y = event.pos
+                    self.selectedObject.x = self.mouse_x + self.cursorObjectDelta[0]
+                    self.selectedObject.y = self.mouse_y + self.cursorObjectDelta[1]
+                    self.infoMenuLabelKill()
+                    self.infoMenuLabel()
                 if(self.modifyState == gameObject.ModifyStates.scale):
                    pass
                 if(self.modifyState == gameObject.ModifyStates.move):
@@ -387,7 +395,108 @@ class Game:
                             object_id=f"#properties_button",
                             manager=self.manager)
         print('Debug: RMB menu is open')
-    
+    def infoMenu(self):
+        self.information_object_window = pygame_gui.elements.UIWindow(pygame.Rect(screen_rev.width - self.properties_size_x_button - 200,self.properties_size_y_button * 1 ,250 ,300),
+                                                        window_display_title = 'information object',
+                                                        visible=True,
+                                                        object_id=f"#information_edit_window",
+                                                        manager=self.manager)
+        self.infoMenuLabel()
+    def infoMenuLabel(self):
+        self.lbl0 = pygame_gui.elements.UILabel(pygame.Rect((0,0), (-1,-1)),
+                                                text = f"Position: {self.selectedObject.x} {self.selectedObject.y}",
+                                                container = self.information_object_window,
+                                                parent_element = self.information_object_window,
+                                                object_id=f"#information_label_info",
+                                                manager = self.manager)
+        
+        self.lbl1 = pygame_gui.elements.UILabel(pygame.Rect((0,15), (-1,-1)),
+                                                text = f"Angle: {self.selectedObject.rotation}",
+                                                container = self.information_object_window,
+                                                parent_element = self.information_object_window,
+                                                #object_id=f"#information_label_info",
+                                                manager = self.manager)
+        self.lbl2 = pygame_gui.elements.UILabel(pygame.Rect((0,30), (-1,-1)),
+                                                text = "____________",
+                                                container = self.information_object_window,
+                                                parent_element = self.information_object_window,
+                                                #object_id=f"#information_label_info",
+                                                manager = self.manager)
+        self.lbl3 = pygame_gui.elements.UILabel(pygame.Rect((0,45), (-1,-1)),
+                                                text = f"Speed: {self.selectedObject.speed}",
+                                                container = self.information_object_window,
+                                                parent_element = self.information_object_window,
+                                                #object_id=f"#information_label_info",
+                                                manager = self.manager)
+        self.lbl4 = pygame_gui.elements.UILabel(pygame.Rect((0,60), (-1,-1)),
+                                                text = f"Axle impulse: {self.selectedObject.mass}",
+                                                container = self.information_object_window,
+                                                parent_element = self.information_object_window,
+                                                #object_id=f"#information_label_info",
+                                                manager = self.manager)
+        self.lbl5 = pygame_gui.elements.UILabel(pygame.Rect((0,75), (-1,-1)),
+                                                text = f"Density: {self.selectedObject.density}",
+                                                container = self.information_object_window,
+                                                parent_element = self.information_object_window,
+                                                #object_id=f"#information_label_info",
+                                                manager = self.manager)
+        self.lbl6 = pygame_gui.elements.UILabel(pygame.Rect((0,90), (-1,-1)),
+                                                text = f"Friction: {self.selectedObject.friction}",
+                                                container = self.information_object_window,
+                                                parent_element = self.information_object_window,
+                                                #object_id=f"#information_label_info",
+                                                manager = self.manager)
+        self.lbl7 = pygame_gui.elements.UILabel(pygame.Rect((0,105), (-1,-1)),
+                                                text = f"Restitution: {self.selectedObject.restitution}",
+                                                container = self.information_object_window,
+                                                parent_element = self.information_object_window,
+                                                #object_id=f"#information_label_info",
+                                                manager = self.manager)
+        self.lbl8 = pygame_gui.elements.UILabel(pygame.Rect((0,120), (-1,-1)),
+                                                text = f"Gravity: {self.gravity}",
+                                                container = self.information_object_window,
+                                                parent_element = self.information_object_window,
+                                                #object_id=f"#information_label_info",
+                                                manager = self.manager)
+        self.lbl9 = pygame_gui.elements.UILabel(pygame.Rect((0,135), (-1,-1)),
+                                                text = f"Air resistance: {self.selectedObject.air_resistance}",
+                                                container = self.information_object_window,
+                                                parent_element = self.information_object_window,
+                                                #object_id=f"#information_label_info",
+                                                manager = self.manager)
+        self.lbl10 = pygame_gui.elements.UILabel(pygame.Rect((0,150), (-1,-1)),
+                                                text = f"Forse: {self.selectedObject.force}",
+                                                container = self.information_object_window,
+                                                parent_element = self.information_object_window,
+                                                #object_id=f"#information_label_info",
+                                                manager = self.manager)
+        self.lbl11 = pygame_gui.elements.UILabel(pygame.Rect((0,165), (-1,-1)),
+                                                text = f"Impulse: {self.selectedObject.impulse}",
+                                                container = self.information_object_window,
+                                                parent_element = self.information_object_window,
+                                                #object_id=f"#information_label_info",
+                                                manager = self.manager)
+        self.lbl12 = pygame_gui.elements.UILabel(pygame.Rect((0,180), (-1,-1)),
+                                                text = f"NOT nailed: {self.selectedObject.canDragging}",
+                                                container = self.information_object_window,
+                                                parent_element = self.information_object_window,
+                                                #object_id=f"#information_label_info",
+                                                manager = self.manager)
+    def infoMenuLabelKill(self):
+        self.lbl0.kill()
+        self.lbl1.kill()
+        self.lbl2.kill()
+        self.lbl3.kill()
+        self.lbl4.kill()
+        self.lbl5.kill()
+        self.lbl6.kill()
+        self.lbl7.kill()
+        self.lbl8.kill()
+        self.lbl9.kill()
+        self.lbl10.kill()
+        self.lbl11.kill()
+        self.lbl12.kill()
+        
     def UIHandleEvents(self, event):
         # menu button
         if event.ui_element == self.settings_button:
@@ -516,11 +625,7 @@ class Game:
 
         # informations buttons
         if event.ui_element == self.information_object_button:
-            self.information_object_window= pygame_gui.elements.UIWindow(pygame.Rect(screen_rev.width - self.properties_size_x_button - 200,self.properties_size_y_button * 1 ,250 ,300),
-                                                        window_display_title = 'information object',
-                                                        visible=True,
-                                                        object_id=f"#information_edit_window",
-                                                        manager=self.manager)
+            self.infoMenu()
             print('information_object_button pressed')
         if event.ui_element == self.information_edit_button:
             self.information_edit_window= pygame_gui.elements.UIWindow(pygame.Rect(screen_rev.width - self.properties_size_x_button - 200,self.properties_size_y_button * 9 ,250 ,300),

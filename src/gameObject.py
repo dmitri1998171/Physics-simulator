@@ -23,7 +23,7 @@ class GameObject:
 
         self.x = x
         self.y = y
-        self.rotation = []
+        self.rotation = 0
 
         self.object = pygame.rect
         self.scaleing = pygame.rect
