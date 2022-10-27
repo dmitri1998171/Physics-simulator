@@ -529,9 +529,22 @@ class Game:
         if event.ui_element == self.start_button:
             if(self.is_start_button_selected == 0):
                 self.start_button.select()
+                # for i in range(self.objects):
+                #     self.objects[i].IsPhysicOn = True
+                for object in self.objects:
+                    object.IsPhysicOn = True
+                    print('object.IsPhysicOn = True')
+                    print(object.w, object.h)
+                    print(self.vertices)
             self.is_start_button_selected += 1
 
             if(self.is_start_button_selected > 1):
+                # for i in range(self.objects):
+                    # self.objects[i].IsPhysicOn = False
+                for object in self.objects:
+                    object.IsPhysicOn =False
+                    print('object.IsPhysicOn =False')
+                    print(object.w, object.h)
                 self.start_button.unselect()
                 self.is_start_button_selected = 0
 

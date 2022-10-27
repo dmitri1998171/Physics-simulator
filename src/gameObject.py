@@ -1,5 +1,7 @@
 import random, pygame, math, enum
 
+from Box2D import (b2_staticBody, b2_dynamicBody)
+
 class ModifyStates(enum.Enum):
     move = 1
     rotate = 2
@@ -24,6 +26,7 @@ class GameObject:
 
         self.body = world.CreateDynamicBody(position=(self.x, self.y))
 
+        self.IsPhysicOn = False
         self.screen = screen
         self.object = pygame.rect
         self.IsScaleing = False
@@ -55,6 +58,10 @@ class Circle(GameObject):
         self.circle = self.body.CreateCircleFixture(radius=self.radius, density=1, friction=0.3)
 
     def draw(self, pos, vert):
+        if self.IsPhysicOn == True:
+            self.body.type = b2_dynamicBody
+        else:
+            self.body.type = b2_staticBody
         if(pos != []):
             self.x = float(pos[0])
             self.y = float(pos[1])
@@ -83,9 +90,15 @@ class Rectangle(GameObject):
         self.box = self.body.CreatePolygonFixture(box=(self.w, self.h), density=1, friction=0.3)
 
     def draw(self, pos, vert):
+        if self.IsPhysicOn == True:
+            self.body.type = b2_dynamicBody
+        else:
+            self.body.type = b2_staticBody
+        
         if(vert != []):
-        # self.object = pygame.draw.rect(self.screen, self.color, (self.x, self.y, self.w, self.h))  
             self.object = pygame.draw.polygon(self.screen, self.color, vert)
+
+            # self.object = pygame.draw.rect(self.screen, self.color, (self.x, self.y, self.w, self.h))
 
         if self.canDragging == False:
             pygame.draw.circle(self.screen, (0,0,0), (self.x + self.w / 2, self.y + self.h / 2), 24)
