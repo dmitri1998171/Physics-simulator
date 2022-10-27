@@ -62,11 +62,12 @@ class Circle(GameObject):
             self.body.type = b2_dynamicBody
         else:
             self.body.type = b2_staticBody
-        if(pos != []):
-            self.x = float(pos[0])
-            self.y = float(pos[1])
 
-        self.object = pygame.draw.circle(self.screen, self.color, (self.x, self.y), self.radius)
+        if(pos != []):
+            x = float(pos[0]) + self.x
+            y = float(pos[1]) + self.y
+
+            self.object = pygame.draw.circle(self.screen, self.color, (x, y), self.radius)
 
         if self.canDragging == False:
             pygame.draw.circle(self.screen, (0,0,0), (self.x, self.y), 24)
@@ -94,9 +95,17 @@ class Rectangle(GameObject):
             self.body.type = b2_dynamicBody
         else:
             self.body.type = b2_staticBody
-        
+            
         if(vert != []):
-            self.object = pygame.draw.polygon(self.screen, self.color, vert)
+            _vert = list(vert)
+
+            for i in range(len(_vert)):
+                _vert[i] = list(_vert[i])
+                _vert[i][0] = _vert[i][0] + self.x
+                _vert[i][1] = _vert[i][1] + self.y
+            
+            self.object = pygame.draw.polygon(self.screen, self.color, _vert)
+        
 
             # self.object = pygame.draw.rect(self.screen, self.color, (self.x, self.y, self.w, self.h))
 

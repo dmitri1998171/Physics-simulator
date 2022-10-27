@@ -557,7 +557,7 @@ class Game:
             self.selectedObject = self.objects[len(self.objects) - 1]
 
         if event.ui_element == self.create_rectangle_button:
-            self.objects.append(gameObject.Rectangle(self.screen, self.world, screen_rev.width / 2, screen_rev.height / 2, 50, 50))
+            self.objects.append(gameObject.Rectangle(self.screen, self.world, screen_rev.width / 4, 0, 50, 50))
             self.selectedObject = self.objects[len(self.objects) - 1]
 
         if event.ui_element == self.create_gear_button:
