@@ -1,5 +1,7 @@
 import random, pygame, math, enum
 
+from Box2D import (b2_staticBody, b2_dynamicBody)
+
 class ModifyStates(enum.Enum):
     move = 1
     rotate = 2
@@ -24,10 +26,11 @@ class GameObject:
 
         self.body = world.CreateDynamicBody(position=(self.x, self.y))
 
+        self.IsPhysicOn = False
         self.screen = screen
         self.object = pygame.rect
-        self.scaleing = pygame.rect
         self.IsScaleing = False
+        self.IsScaleingPressed = False
         self.canDragging = True # Для работы фиксатора
         self.color = (random.randint(0, 256), random.randint(0, 256), random.randint(0, 256))
 
@@ -55,6 +58,10 @@ class Circle(GameObject):
         self.circle = self.body.CreateCircleFixture(radius=self.radius, density=1, friction=0.3)
 
     def draw(self, pos, vert):
+        if self.IsPhysicOn == True:
+            self.body.type = b2_dynamicBody
+        else:
+            self.body.type = b2_staticBody
         if(pos != []):
             self.x = float(pos[0])
             self.y = float(pos[1])
@@ -65,10 +72,13 @@ class Circle(GameObject):
             pygame.draw.circle(self.screen, (0,0,0), (self.x, self.y), 24)
             pygame.draw.line(self.screen, (255,255,255), [self.x-10, self.y-10], [self.x+10, self.y+10], 3)
             pygame.draw.line(self.screen, (255,255,255), [self.x+10, self.y-10], [self.x-10, self.y+10], 3)
-        
-        # if self.modifyState == ModifyStates.scale:
-        #     self.scaleing = pygame.draw.line(screen, (255,255,255), [self.x + self.radius - 13 ,self.y + self.radius - 3], [self.x + self.radius - 3 ,self.y + self.radius - 3], 3)
-        #     pygame.draw.line(screen, (255,255,255), [self.x + self.radius - 3, self.y + self.radius - 13], [self.x + self.radius - 3, self.y + self.radius - 3], 3)
+        if self.IsScaleing:
+            if self.IsScaleingPressed:
+                pygame.draw.line(self.screen, (255,255,255), [self.x + self.radius - 23 ,self.y + self.radius - 5], [self.x + self.radius - 5 ,self.y + self.radius - 5], 5)
+                pygame.draw.line(self.screen, (255,255,255), [self.x + self.radius - 5, self.y + self.radius - 23], [self.x + self.radius - 5, self.y + self.radius - 5], 5)
+            else:
+                pygame.draw.line(self.screen, (255,255,255), [self.x + self.radius - 13 ,self.y + self.radius - 3], [self.x + self.radius - 3 ,self.y + self.radius - 3], 3)
+                pygame.draw.line(self.screen, (255,255,255), [self.x + self.radius - 3, self.y + self.radius - 13], [self.x + self.radius - 3, self.y + self.radius - 3], 3)
 
         for fixture in self.body.fixtures:
             fixture.shape.draw(self.body, fixture)
@@ -80,18 +90,31 @@ class Rectangle(GameObject):
         self.box = self.body.CreatePolygonFixture(box=(self.w, self.h), density=1, friction=0.3)
 
     def draw(self, pos, vert):
+        if self.IsPhysicOn == True:
+            self.body.type = b2_dynamicBody
+        else:
+            self.body.type = b2_staticBody
+        
         if(vert != []):
-        # self.object = pygame.draw.rect(self.screen, self.color, (self.x, self.y, self.w, self.h))  
             self.object = pygame.draw.polygon(self.screen, self.color, vert)
+
+            # self.object = pygame.draw.rect(self.screen, self.color, (self.x, self.y, self.w, self.h))
 
         if self.canDragging == False:
             pygame.draw.circle(self.screen, (0,0,0), (self.x + self.w / 2, self.y + self.h / 2), 24)
             pygame.draw.line(self.screen, (255,255,255), [self.x + self.w / 2 -10, self.y + self.h / 2 -10], [self.x + self.h / 2 +10, self.y + self.h / 2 +10], 3)
             pygame.draw.line(self.screen, (255,255,255), [self.x + self.w / 2 +10, self.y + self.h / 2 -10], [self.x + self.h / 2 -10, self.y + self.h / 2 +10], 3)
-
+            #self.scaleing = pygame.draw.line(self.screen, (255,255,255), [self.x + self.radius - 13 ,self.y + self.radius - 3], [self.x + self.radius - 3 ,self.y + self.radius - 3], 3)
+        if self.IsScaleing:
+            if self.IsScaleingPressed:
+                pygame.draw.line(self.screen, (255,255,255), [self.x + self.w - 5, self.y + self.h - 23], [self.x + self.w - 5, self.y + self.h - 5], 5)
+                pygame.draw.line(self.screen, (255,255,255), [self.x + self.w - 23 ,self.y + self.h - 5], [self.x + self.w - 5 ,self.y + self.h - 5], 5)
+            else:
+                pygame.draw.line(self.screen, (255,255,255), [self.x + self.w - 3, self.y + self.h - 13], [self.x + self.w - 3, self.y + self.h - 3], 3)
+                pygame.draw.line(self.screen, (255,255,255), [self.x + self.w - 13 ,self.y + self.h - 3], [self.x + self.w - 3 ,self.y + self.h - 3], 3)
         for fixture in self.body.fixtures:
             fixture.shape.draw(self.body, fixture)
-
+            
 class Gear(GameObject):
     def __init__(self, screen, x, y):
         super().__init__(screen, x, y, 0, 0)

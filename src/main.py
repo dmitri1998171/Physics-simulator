@@ -86,6 +86,8 @@ class Game:
         self.isGravityPressed = False
         self.isInfoWindowVisible = False
 
+        self.infoMenuButtonHeight = 15
+
         self.menuButtons()
 
 # ################################################
@@ -284,21 +286,16 @@ class Game:
                         if event.button == 1:
                             self.selectedObject = self.objects[i]
                             self.isDragging = True
-
                             if(self.modifyState == gameObject.ModifyStates.move):
                                 if(self.selectedObject.canDragging and self.isDragging):
                                     self.mouse_x, self.mouse_y = event.pos
                                     self.cursorObjectDelta[0] = self.selectedObject.x - self.mouse_x
                                     self.cursorObjectDelta[1] = self.selectedObject.y - self.mouse_y
-
-                            # if abs(self.cursorObjectDelta[0]) > self.selectedObject.w - 20 and abs(self.cursorObjectDelta[1]) > self.selectedObject.h - 20 and self.selectedObject.IsScaleing == True:
-                            #     self.cursorObjectDelta[2] = self.selectedObject.h + self.mouse_x
-                            #     self.cursorObjectDelta[3] = self.selectedObject.w + self.mouse_y
-                            #     print('debug: y', self.selectedObject.y, self.mouse_y, self.cursorObjectDelta[0])
-                            #     print('debug: x', self.selectedObject.x, self.mouse_x, self.cursorObjectDelta[1])
-                            #     print('debug: h', self.selectedObject.h, self.cursorObjectDelta[2])
-                            #     print('debug: w', self.selectedObject.w, self.cursorObjectDelta[3])
-                        
+                            if(self.modifyState == gameObject.ModifyStates.scale):
+                                self.ScalingNewPos_x = self.selectedObject.x + self.selectedObject.w
+                                self.ScalingNewPos_y = self.selectedObject.y + self.selectedObject.h
+                                print(f'\n\tInsert pos:   X {self.ScalingNewPos_x}\t Y {self.ScalingNewPos_y}')
+                                self.selectedObject.IsScaleingPressed = True
                         # MENU RBM
                         if event.button == 3:
                             self.propertiesWindowsCount = self.propertiesWindowsCount + 1
@@ -315,11 +312,6 @@ class Game:
                         if self.isPropertiesClose == True:
                             self.properties.kill()
                             self.isPropertiesClose = False
-            
-            if event.type == pygame.MOUSEBUTTONUP:
-                if event.button == 1:
-                    self.isDragging = False
-                    self.ScalingCount = 0 
 
             if event.type == pygame.MOUSEMOTION:
                 if(self.modifyState == gameObject.ModifyStates.scale):
@@ -329,6 +321,20 @@ class Game:
                         self.mouse_x, self.mouse_y = event.pos
                         self.selectedObject.x = self.mouse_x + self.cursorObjectDelta[0]
                         self.selectedObject.y = self.mouse_y + self.cursorObjectDelta[1]
+                        
+
+            if event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 1:
+                    self.ScalingCount = 0 
+                    if(self.modifyState == gameObject.ModifyStates.scale):
+                        self.mouse_x, self.mouse_y = event.pos
+                        if(self.selectedObject.canDragging and self.isDragging):
+                            print(f'\tAdding pos: X {self.mouse_x - self.ScalingNewPos_x}\t Y {self.mouse_y - self.ScalingNewPos_y}')
+                            self.selectedObject.w = self.selectedObject.w + self.mouse_x - self.ScalingNewPos_x
+                            self.selectedObject.h = self.selectedObject.h + self.mouse_y - self.ScalingNewPos_y   
+                            print(f'\tApply scale: X {self.selectedObject.w}\t Y {self.selectedObject.h}\n')
+                            self.selectedObject.IsScaleingPressed = False
+                    self.isDragging = False
 
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
                 self.UIHandleEvents(event)
@@ -366,95 +372,124 @@ class Game:
                                                         visible=True,
                                                         object_id=f"#information_window",
                                                         manager=self.manager)
-        self.lbl0 = pygame_gui.elements.UILabel(pygame.Rect((0,0), (-1,-1)),
-                                                text = f"Position: {self.selectedObject.x} {self.selectedObject.y}",
+
+        self.lbl0 = pygame_gui.elements.UILabel(pygame.Rect((0,self.infoMenuButtonHeight * 1), (-1,-1)),
+                                                text = f"Position: X={self.selectedObject.x} Y={self.selectedObject.y}",
                                                 container = self.information_object_window,
                                                 parent_element = self.information_object_window,
                                                 object_id=f"#information_label_info",
                                                 manager = self.manager)
-        self.lbl1 = pygame_gui.elements.UILabel(pygame.Rect((0,15), (-1,-1)),
+        self.lbl2 = pygame_gui.elements.UILabel(pygame.Rect((0,self.infoMenuButtonHeight * 2), (-1,-1)),
+                                                text = f"Scale: W={self.selectedObject.w} H={self.selectedObject.h}",
+                                                container = self.information_object_window,
+                                                parent_element = self.information_object_window,
+                                                #object_id=f"#information_label_info",
+                                                manager = self.manager)
+        self.lbl1 = pygame_gui.elements.UILabel(pygame.Rect((0,self.infoMenuButtonHeight * 3), (-1,-1)),
                                                 text = f"Angle: {self.selectedObject.rotation}",
                                                 container = self.information_object_window,
                                                 parent_element = self.information_object_window,
                                                 #object_id=f"#information_label_info",
                                                 manager = self.manager)
-        self.lbl2 = pygame_gui.elements.UILabel(pygame.Rect((0,30), (-1,-1)),
+        self.lblhr = pygame_gui.elements.UILabel(pygame.Rect((0,self.infoMenuButtonHeight * 4), (-1,-1)),
                                                 text = "==============================",
                                                 container = self.information_object_window,
                                                 parent_element = self.information_object_window,
                                                 #object_id=f"#information_label_info",
                                                 manager = self.manager)
-        self.lbl3 = pygame_gui.elements.UILabel(pygame.Rect((0,45), (-1,-1)),
+        self.lbl3 = pygame_gui.elements.UILabel(pygame.Rect((0,self.infoMenuButtonHeight * 5), (-1,-1)),
                                                 text = f"Speed: {self.selectedObject.speed}",
                                                 container = self.information_object_window,
                                                 parent_element = self.information_object_window,
                                                 #object_id=f"#information_label_info",
                                                 manager = self.manager)
-        self.lbl4 = pygame_gui.elements.UILabel(pygame.Rect((0,60), (-1,-1)),
+        self.lbl4 = pygame_gui.elements.UILabel(pygame.Rect((0,self.infoMenuButtonHeight * 6), (-1,-1)),
                                                 text = f"Axle impulse: {self.selectedObject.mass}",
                                                 container = self.information_object_window,
                                                 parent_element = self.information_object_window,
                                                 #object_id=f"#information_label_info",
                                                 manager = self.manager)
-        self.lbl5 = pygame_gui.elements.UILabel(pygame.Rect((0,75), (-1,-1)),
+        self.lbl5 = pygame_gui.elements.UILabel(pygame.Rect((0,self.infoMenuButtonHeight * 7), (-1,-1)),
                                                 text = f"Density: {self.selectedObject.density}",
                                                 container = self.information_object_window,
                                                 parent_element = self.information_object_window,
                                                 #object_id=f"#information_label_info",
                                                 manager = self.manager)
-        self.lbl6 = pygame_gui.elements.UILabel(pygame.Rect((0,90), (-1,-1)),
+        self.lbl6 = pygame_gui.elements.UILabel(pygame.Rect((0,self.infoMenuButtonHeight * 8), (-1,-1)),
                                                 text = f"Friction: {self.selectedObject.friction}",
                                                 container = self.information_object_window,
                                                 parent_element = self.information_object_window,
                                                 #object_id=f"#information_label_info",
                                                 manager = self.manager)
-        self.lbl7 = pygame_gui.elements.UILabel(pygame.Rect((0,105), (-1,-1)),
+        self.lbl7 = pygame_gui.elements.UILabel(pygame.Rect((0,self.infoMenuButtonHeight * 9), (-1,-1)),
                                                 text = f"Restitution: {self.selectedObject.restitution}",
                                                 container = self.information_object_window,
                                                 parent_element = self.information_object_window,
                                                 #object_id=f"#information_label_info",
                                                 manager = self.manager)
-        self.lbl8 = pygame_gui.elements.UILabel(pygame.Rect((0,120), (-1,-1)),
+        self.lbl8 = pygame_gui.elements.UILabel(pygame.Rect((0,self.infoMenuButtonHeight * 10), (-1,-1)),
                                                 text = f"Gravity: {self.gravity}",
                                                 container = self.information_object_window,
                                                 parent_element = self.information_object_window,
                                                 #object_id=f"#information_label_info",
                                                 manager = self.manager)
-        self.lbl9 = pygame_gui.elements.UILabel(pygame.Rect((0,135), (-1,-1)),
+        self.lbl9 = pygame_gui.elements.UILabel(pygame.Rect((0,self.infoMenuButtonHeight * 11), (-1,-1)),
                                                 text = f"Air resistance: {self.selectedObject.air_resistance}",
                                                 container = self.information_object_window,
                                                 parent_element = self.information_object_window,
                                                 #object_id=f"#information_label_info",
                                                 manager = self.manager)
-        self.lbl10 = pygame_gui.elements.UILabel(pygame.Rect((0,150), (-1,-1)),
+        self.lbl10 = pygame_gui.elements.UILabel(pygame.Rect((0,self.infoMenuButtonHeight * 12), (-1,-1)),
                                                 text = f"Forse: {self.selectedObject.force}",
                                                 container = self.information_object_window,
                                                 parent_element = self.information_object_window,
                                                 #object_id=f"#information_label_info",
                                                 manager = self.manager)
-        self.lbl11 = pygame_gui.elements.UILabel(pygame.Rect((0,165), (-1,-1)),
+        self.lbl11 = pygame_gui.elements.UILabel(pygame.Rect((0,self.infoMenuButtonHeight * 13), (-1,-1)),
                                                 text = f"Impulse: {self.selectedObject.impulse}",
                                                 container = self.information_object_window,
                                                 parent_element = self.information_object_window,
                                                 #object_id=f"#information_label_info",
                                                 manager = self.manager)
-        self.lbl12 = pygame_gui.elements.UILabel(pygame.Rect((0,180), (-1,-1)),
+        self.lbl12 = pygame_gui.elements.UILabel(pygame.Rect((0,self.infoMenuButtonHeight * 14), (-1,-1)),
                                                 text = f"Not nailed: {self.selectedObject.canDragging}",
                                                 container = self.information_object_window,
                                                 parent_element = self.information_object_window,
                                                 #object_id=f"#information_label_info",
                                                 manager = self.manager)
-        self.lbl13 = pygame_gui.elements.UILabel(pygame.Rect((0,195), (-1,-1)),
+        self.lbl13 = pygame_gui.elements.UILabel(pygame.Rect((0,self.infoMenuButtonHeight * 15), (-1,-1)),
                                                 text = f"Is scaling: {self.selectedObject.IsScaleing}",
                                                 container = self.information_object_window,
                                                 parent_element = self.information_object_window,
                                                 #object_id=f"#information_label_info",
                                                 manager = self.manager)
-            
+
+    def HelpMenu(self):
+        self.text_box = self.UITextBox(
+        html_text="<body><font color=#E0E080>hey hey hey "
+                  "what are the <a href=haps>haps</a> my "
+                  "<u>brand new friend?</u> These are the "
+                  "days of our <i>disco tent. </i>"
+                  "<shadow size=1 offset=0,0 color=#306090><font color=#E0F0FF><b>Why the "
+                  "long night</b></font></shadow> of <font color=regular_text>absolution</font>, "
+                  "shall <b>becometh </b>the man. Lest "
+                  "forth "
+                  "betwixt moon under one nation "
+                  "before and beyond opus grande "
+                  "just in time for the last time "
+                  "three nine nine. Toight."
+                  "<br><br>"
+                  "hella toight.</font>",
+        relative_rect=pygame.Rect(100, 100, 400, 200),
+        manager=self.manager)
+        self.text_box.scroll_bar.has_moved_recently = True
+        self.text_box.update(5.0)
+        
     def infoMenuKill(self):
         self.lbl0.kill()
         self.lbl1.kill()
         self.lbl2.kill()
+        self.lblhr.kill()
         self.lbl3.kill()
         self.lbl4.kill()
         self.lbl5.kill()
@@ -494,9 +529,22 @@ class Game:
         if event.ui_element == self.start_button:
             if(self.is_start_button_selected == 0):
                 self.start_button.select()
+                # for i in range(self.objects):
+                #     self.objects[i].IsPhysicOn = True
+                for object in self.objects:
+                    object.IsPhysicOn = True
+                    print('object.IsPhysicOn = True')
+                    print(object.w, object.h)
+                    print(self.vertices)
             self.is_start_button_selected += 1
 
             if(self.is_start_button_selected > 1):
+                # for i in range(self.objects):
+                    # self.objects[i].IsPhysicOn = False
+                for object in self.objects:
+                    object.IsPhysicOn =False
+                    print('object.IsPhysicOn =False')
+                    print(object.w, object.h)
                 self.start_button.unselect()
                 self.is_start_button_selected = 0
 
@@ -552,9 +600,11 @@ class Game:
                 self.toolbar_move_without_inert_button.unselect()
                 self.toolbar_rotate_button.unselect()
                 self.toolbar_size_button.select()
+                self.selectedObject.IsScaleing = True
             else:
                 self.modifyState = 0
                 self.toolbar_size_button.unselect()
+                self.selectedObject.IsScaleing = False
 
         # scale buttons
         if event.ui_element == self.scale_plus_button:
